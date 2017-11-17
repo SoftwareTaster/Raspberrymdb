@@ -1,0 +1,34 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Edit Your Profile</h1>
+<form action="" method="post" name="edit">
+    {{form.hidden_tag()}}
+    <table>
+        <tr>
+            <td>Your nickname:</td>
+            <td>{{form.nickname(size = 24)}}</td>
+        </tr>
+        <tr>
+            <td>Create group:</td>
+            <td>{{form.create_group_name(size = 24)}}</td>
+        </tr>
+        <tr>
+            <td>Join group:</td>
+            {% for group in groups %}
+            <td>{{ group.nickname }}</td>
+            {% endfor %}
+            <td>{{form.join_group_name(size = 24)}}</td>
+        </tr>
+        <tr>
+            <td>About yourself:</td>
+            <td>{{form.about_me(cols = 32, rows = 4)}}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Save Changes"></td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

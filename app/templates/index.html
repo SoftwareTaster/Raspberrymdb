@@ -1,0 +1,146 @@
+<!-- extend base layout -->
+{% extends "base.html" %} {% block content %}
+<h1>Hi, {{user.nickname}}!</h1>
+<form action="" method="post" name="index">
+	{{ form.hidden_tag() }}
+	{{ form.search_str }}
+	<br>
+	<input id="whichblock" type="hidden" name="whichblock">
+	<input type="submit" value="Search">
+	<br>
+</form>
+<button id="button1" type="button">私有</button>
+<button id="button2" type="button">群组</button>
+<button id="button3" type="button">公有</button>
+<form action="http://localhost:5000/ask4">
+<div id="div1" style="display: none;">
+    {% for mtype in medias1 %}
+    <div>
+    {% if loop.index0 == 0 %}
+    <script type="text/javascript">
+    var flag = 0;
+    </script>IMAGE {% elif loop.index0 == 1 %}
+    <script type="text/javascript">
+    var flag = 1
+    </script>AUDIO {% else %}
+    <script type="text/javascript">
+    var flag = 2;
+    </script>VIDEO {% endif %}
+    {% for media in mtype %}
+    <div>
+    {{ media.name }}
+    <input type="hidden" value="{{ media.id }}">
+    <input class="ask4input" type="submit" value="Ask for">
+    <br>
+    <script type="text/javascript">
+    if (flag == 0) document.write("<img src='{{ media.furl }}' width='300px' height='300px'>")
+    else if (flag == 1) document.write("<audio src='{{ media.furl }}' controls='controls'></audio>")
+    else document.write("<video src='{{ media.furl }}' controls='controls' width='600px' height='300px'></video>")
+    </script>
+	<br>
+	</div>
+    {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+<div id="div2" style="display: none;">
+    {% for mtype in medias2 %}
+    <div>
+    {% if loop.index0 == 0 %}
+    <script type="text/javascript">
+    var flag = 0;
+    </script>IMAGE {% elif loop.index0 == 1 %}
+    <script type="text/javascript">
+    var flag = 1
+    </script>AUDIO {% else %}
+    <script type="text/javascript">
+    var flag = 2;
+    </script>VIDEO {% endif %}
+    {% for media in mtype %}
+	<div>
+    {{ media.name }}
+    <input type="hidden" value="{{ media.id }}">
+    <input class="ask4input" type="submit" value="Ask for">
+    <br>
+    <script type="text/javascript">
+    if (flag == 0) document.write("<img src='{{ media.furl }}' width='300px' height='300px'>")
+    else if (flag == 1) document.write("<audio src='{{ media.furl }}' controls='controls'></audio>")
+    else document.write("<video src='{{ media.furl }}' controls='controls' width='600px' height='300px'></video>")
+    </script>
+	<br>
+	</div>
+    {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+<div id="div3" style="display: none;">
+    {% for mtype in medias3 %}
+	<div>
+    {% if loop.index0 == 0 %}
+    <script type="text/javascript">
+    var flag = 0;
+    </script>IMAGE {% elif loop.index0 == 1 %}
+    <script type="text/javascript">
+    var flag = 1
+    </script>AUDIO {% else %}
+    <script type="text/javascript">
+    var flag = 2;
+    </script>VIDEO {% endif %}
+    {% for media in mtype %}
+	<div>
+    {{ media.name }}
+    <input type="hidden" value="{{ media.id }}">
+    <input class="ask4input" type="submit" value="Ask for">
+    <br>
+    <script type="text/javascript">
+    if (flag == 0) document.write("<img src='{{ media.furl }}' width='300px' height='300px'>")
+    else if (flag == 1) document.write("<audio src='{{ media.furl }}' controls='controls'></audio>")
+    else document.write("<video src='{{ media.furl }}' controls='controls' width='600px' height='300px'></video>")
+    </script>
+	<br>
+	</div>
+    {% endfor %}
+	</div>
+    {% endfor %}
+</div>
+</form>
+<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		{% if flag == '1' %}
+		$("#div1").show();
+		$("#div2").hide();
+		$("#div3").hide();
+		{% elif flag == '2' %}
+		$("#div1").hide();
+		$("#div2").show();
+		$("#div3").hide();
+		{% else %}
+		$("#div1").hide();
+		$("#div2").hide();
+		$("#div3").show();
+		{% endif %}
+		$("#button1").click(function() {
+			$("#div1").show();
+			$("#div2").hide();
+			$("#div3").hide();
+			$("#whichblock").attr('value', '1');
+		})
+		$("#button2").click(function() {
+			$("#div1").hide();
+			$("#div2").show();
+			$("#div3").hide();
+			$("#whichblock").attr('value', '2');
+		})
+		$("#button3").click(function() {
+			$("#div1").hide();
+			$("#div2").hide();
+			$("#div3").show();
+			$("#whichblock").attr('value', '3');
+		})
+		$(".ask4input").click(function() {
+			$(this).siblings("input").attr('name', 'buywhat');
+		})
+	})
+</script>
+{% endblock %}

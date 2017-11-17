@@ -1,0 +1,36 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+<script type="text/javascript">
+/* 当用户点击一个OpenIDs提供商的链接并且输入用户名，该提供商相应的OpenID就被写入到文本域中 */
+function set_openid(openid, pr) {
+    u = openid.search('<username>');
+    if (u != -1) {
+        // openid requires username
+        user = prompt('Enter your ' + pr + ' username:');
+        openid = openid.substr(0, u) + user + openid.substr(u + 10);
+    }
+    form = document.forms['login'];
+    form.elements['openid'].value = openid;
+}
+</script>
+<h1>Sign In</h1>
+<form action="" method="post" name="login">
+    {{form.hidden_tag()}} <!-- 模板参数form.hidden_tag()将被替换为一个隐藏字段，用来是实现在配置中激活的CSRF保护，如果你已经激活了CSRF，这个字段需要出现在你所有的表单中 -->
+    <p>
+        Please enter your OpenID, or select one of the providers below:
+        <br> {{form.openid(size=80)}}
+        {% for error in form.errors.openid %}
+        <span style="color: red;">[{{error}}]</span>
+        {% endfor %} <!-- 通常情况下，任何需要验证的字段都会把错误信息放入form.field_name.errors下，我们以红色的字体颜色显示这些错误信息以引起用户的注意 -->
+        <br> |
+        {% for pr in providers %}
+        <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');">{{pr.name}}</a> |
+        {% endfor %}
+    </p>
+    <p>{{form.remember_me}} Remember Me</p>
+    <p>
+        <input type="submit" value="Sign In">
+    </p>
+</form>
+{% endblock %}

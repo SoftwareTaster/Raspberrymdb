@@ -1,0 +1,30 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{title}} - microblog</title>
+    {% else %}
+    <title>microblog</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>Microblog:
+        <a href="{{ url_for('index') }}">Home</a>
+        {% if g.user.is_authenticated %}
+        | <a href="{{ url_for('user', nickname = g.user.nickname) }}">Your Profile</a>
+        | <a href="{{ url_for('upload_file') }}">Upload</a>
+        | <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+    </div>
+    <hr>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li>{{ message }} </li>
+    {% endfor %} <!-- 闪现的消息将不会自动地出现在我们的页面上，我们的模板需要加入展示消息的内容 -->
+    </ul>
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </body>
+</html>

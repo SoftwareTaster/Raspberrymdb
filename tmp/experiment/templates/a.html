@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script>
+    $(document).ready(function() {
+        $("button").click(function() {
+            $.post("http://localhost:5000/todo1", {
+                    lastname: "Donald Duck",
+                    city: "Duckburg"
+                },
+                function(data, status) {
+                    alert("Data: " + data + "\nStatus: " + status);
+                });
+        });
+    });
+    </script>
+</head>
+
+<body>
+    <form action="http://localhost:5000/todo1" method="POST">
+        First name:
+        <br>
+        <input type="text" name="firstname" value="Mickey">
+        <br> Last name:
+        <br>
+        <input type="text" name="lastname" value="Mouse">
+        <br>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+    <button>向页面发送 HTTP GET 请求，然后获得返回的结果</button>
+    <script>
+    /**
+     * 获取数据ajax-get请求
+     * @author laixm
+     */
+    $.sanjiGetJSON = function(url, data, callback) {
+        $.ajax({
+            url: url,
+            type: "get",
+            contentType: "application/json",
+            dataType: "json",
+            timeout: 10000,
+            data: data,
+            success: function(data) {
+                callback(data);
+            }
+        });
+    };
+
+    /**
+     * 提交json数据的post请求
+     * @author laixm
+     */
+    $.postJSON = function(url, data, callback) {
+        $.ajax({
+            url: url,
+            type: "post",
+            contentType: "application/json",
+            dataType: "json",
+            data: data,
+            timeout: 60000,
+            success: function(msg) {
+                callback(msg);
+            },
+            error: function(xhr, textstatus, thrown) {
+
+            }
+        });
+    };
+
+    /**
+     * 修改数据的ajax-put请求
+     * @author laixm
+     */
+    $.putJSON = function(url, data, callback) {
+        $.ajax({
+            url: url,
+            type: "put",
+            contentType: "application/json",
+            dataType: "json",
+            data: data,
+            timeout: 20000,
+            success: function(msg) {
+                callback(msg);
+            },
+            error: function(xhr, textstatus, thrown) {
+
+            }
+        });
+    };
+    /**
+     * 删除数据的ajax-delete请求
+     * @author laixm
+     */
+    $.deleteJSON = function(url, data, callback) {
+        $.ajax({
+            url: url,
+            type: "delete",
+            contentType: "application/json",
+            dataType: "json",
+            data: data,
+            success: function(msg) {
+                callback(msg);
+            },
+            error: function(xhr, textstatus, thrown) {
+
+            }
+        });
+    };
+    </script>
+    <!--     <script>
+$(document).ready(function() {
+    $("button").click(function() {
+        $.putJSON("http://localhost:5000/todo1", {
+            lastname: "Donald Duck",
+            city: "Duckburg"
+        });
+    });
+}); /*jquery-3.2.1.min.js:4 PUT http://localhost:5000/todo1 405 (METHOD NOT ALLOWED)*/
+</script> -->
+    <!--     <script>
+$(document).ready(function() {
+    $("button").click(function() {
+        $.postJSON("http://localhost:5000/todo1", {
+            lastname: "Donald Duck",
+            city: "Duckburg"
+        });
+    });
+}); /*POST http://localhost:5000/todo1 400 (BAD REQUEST)*/
+</script> -->
+</body>
+
+</html>

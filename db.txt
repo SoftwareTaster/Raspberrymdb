@@ -1,0 +1,4 @@
+创建数据库：python db_create.py
+迁移：python db_migrate.py（应用程序数据库结构的任何改变）
+数据库升级到最新版本：python db_upgrade.py
+回退数据库一个版本：python db_downgrade.py（可以运行多次来回退多个版本）

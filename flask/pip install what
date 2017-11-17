@@ -1,0 +1,16 @@
+flask\Scripts\pip install flask ------>done
+flask\Scripts\pip install flask-login ------>done
+flask\Scripts\pip install flask-openid ------>done
+flask\Scripts\pip install flask-mail
+flask\Scripts\pip install flask-sqlalchemy ------>done
+flask\Scripts\pip install sqlalchemy-migrate ------>done
+flask\Scripts\pip install flask-whooshalchemy
+flask\Scripts\pip install flask-wtf ------>failed, flask\Scripts\pip install Flask-WTF instead
+flask\Scripts\pip install flask-babel
+flask\Scripts\pip install guess_language
+flask\Scripts\pip install flipflop
+flask\Scripts\pip install coverage
+flask\Scripts\pip install flask-uploads ------>done
+
+pillow
+moviepy

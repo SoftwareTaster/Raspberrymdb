@@ -1,0 +1,107 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+<table>
+    <tr valign="top">
+        <td><img src="{{user.avatar(128)}}"></td>
+        <td>
+            <h1>User: {{user.nickname}}</h1> {% if user.about_me %}
+            <p>{{user.about_me}}</p>{% endif %} {% if user.last_seen %}
+            <p><i>Last seen on: {{user.last_seen}}</i></p>{% endif %} {% if user.id == g.user.id %}
+            <p><a href="{{url_for('edit')}}">Edit</a></p>{% endif %}
+        </td>
+    </tr>
+</table>
+<hr>
+<button id="delete-button" type="button">Delete</button>
+<form action="http://localhost:5000/control">
+    {% for mtype in medias %}
+    <div>
+    {% if loop.index0 == 0 %}
+    <script type="text/javascript">
+    var flag = 0;
+    </script>
+    <span>IMAGE</span><br>
+    {% elif loop.index0 == 1 %}
+    <script type="text/javascript">
+    var flag = 1
+    </script>
+    <span>AUDIO</span><br>
+    {% else %}
+    <script type="text/javascript">
+    var flag = 2;
+    </script>
+    <span>VIDEO</span><br>
+    {% endif %}
+    {% for media in mtype %}
+    <div>
+    {{ media.name }}
+    <input class="delete-input" type="checkbox" value="{{ media.id }}"><span class="delete-text">Delete</span>
+    <button class="rename-button" type="button">Rename</button>
+    <input class="rename-input1" type="hidden" value="{{ media.id }}">
+    <input class="rename-input2" type="text" value="{{ media.name }}">
+    <input class="rename-input" type="submit">
+    <button class="privilege-button" id="{{ media.id }}" type="button">Who can see</button>
+    <input class="privilege-input" type="radio" value=1 {% if media.privilege==1 %}checked{% endif %}><span class="privilege-text">Only yourself</span>
+    <input class="privilege-input" type="radio" value=2 {% if media.privilege==2 %}checked{% endif %}><span class="privilege-text">Family member</span>
+    <input class="privilege-input" type="radio" value=3 {% if media.privilege==3 %}checked{% endif %}><span class="privilege-text">All people</span>
+    <input class="privilege-input1" type="submit">
+    <br>
+    <script type="text/javascript">
+    if (flag == 0) document.write("<img src='{{ media.furl }}' width='300px' height='300px'>")
+    else if (flag == 1) document.write("<audio src='{{ media.furl }}' controls='controls'></audio>")
+    else document.write("<video src='{{ media.furl }}' controls='controls' width='600px' height='300px'></video>")
+    </script>
+    <br>
+    </div>
+    {% endfor %}
+    </div>
+    {% endfor %}
+    <input class="delete-input" type="submit">
+</form>
+
+<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $(".delete-input").hide();
+    $(".delete-text").hide();
+
+    $(".rename-input").hide();
+    $(".rename-input1").hide();
+    $(".rename-input2").hide();
+
+    $(".privilege-input").hide();
+    $(".privilege-input1").hide();
+    $(".privilege-text").hide();
+})
+$(document).ready(function() {
+    $("#delete-button").click(function() {
+        if ($(".delete-input").attr('name')) $(".delete-input").removeAttr('name');
+        else $(".delete-input").attr('name', 'delete');
+        $(".delete-input").toggle();
+        $(".delete-text").toggle();
+    })
+})
+$(document).ready(function() {
+    $(".rename-button").click(function() {
+        if ($(this).siblings(".rename-input1").attr('name')) $(this).siblings(".rename-input1").removeAttr('name');
+        else $(this).siblings(".rename-input1").attr('name', 'rid');
+        if ($(this).siblings(".rename-input2").attr('name')) $(this).siblings(".rename-input2").removeAttr('name');
+        else $(this).siblings(".rename-input2").attr('name', 'rename');
+        $(this).siblings(".rename-input").toggle();
+        $(this).siblings(".rename-input1").toggle();
+        $(this).siblings(".rename-input2").toggle();
+    })
+})
+$(document).ready(function() {
+    $(".privilege-button").click(function() {
+        var name = $(this).attr('id');
+        if ($(this).siblings(".privilege-input").attr('name')) $(this).siblings(".privilege-input").removeAttr('name');
+        else $(this).siblings(".privilege-input").attr('name', name);
+        $(this).siblings(".privilege-input").toggle();
+        $(this).siblings(".privilege-input1").toggle();
+        $(this).siblings(".privilege-text").toggle();
+    })
+})
+</script>
+{% endblock %}

@@ -29,12 +29,12 @@ def format(name):
 	elif fileFormat=="wav":
 		commEx( "ffmpeg -i " + fileName + " " + filePath + pureName + ".mp3 -y" )
 		commEx( "del " + fileName ) #Linux中使用rm
-	elif fileFormat=="png" or fileFormat=="bmp":
+	elif fileFormat=="png" or fileFormat=="bmp" or fileFormat=="gif":
 		pic = Image.open(fileName)
 		pic.save(filePath+pureName+".jpg")
 		commEx( "del " + fileName ) #Linux中使用rm
 	elif fileFormat=="mp4" or fileFormat=="avi" or fileFormat=="mov" or fileFormat=="flv" or fileFormat=="rmvb" or fileFormat=="mkv":
-		picName = filePath + "show_video/" + pureName + ".png"
+		picName = filePath + "cover/" + pureName + ".png"
 		clip = VideoFileClip(fileName)
 		cutTime = int(clip.duration/2)
 		commEx( "ffmpeg -ss " + str(cutTime) + " -i " + fileName + " " + picName \

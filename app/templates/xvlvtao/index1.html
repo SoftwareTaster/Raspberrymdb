@@ -134,12 +134,11 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
             <ul class="nav nav-sidebar">
                 <li class="active"><a href="index1.html" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
                 <li><a href="publish.html" class="user-icon"><span class="glyphicon glyphicon-home glyphicon-blackboard" aria-hidden="true"></span>Publish</a></li>
-                <li><a href="history.html" class="sub-icon"><span class="glyphicon glyphicon-home glyphicon-hourglass" aria-hidden="true"></span>History</a></li>
                 <li><a href="#" class="menu1"><span class="glyphicon glyphicon-film" aria-hidden="true"></span>Groups<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
                 <ul class="cl-effect-2">
-                    <li><a href="groups.html">Robin</a></li>
-                    <li><a href="#">Jack Ma</a></li>
-                    <li><a href="#">Pony</a></li>
+                    {% for group in groups %}
+                    <li><a href="groups.html">{{ group.nickname }}</a></li>
+                    {% endfor %}
                 </ul>
                 <!-- script-for-menu -->
                 <script>
@@ -153,7 +152,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                 <ul class="cl-effect-1">
                     <li><a href="{{ url_for('private') }}">Upload</a></li>
                     <li><a href="#">Collects</a></li>
-                    <li><a href="#">Comments</a></li>
+                    <li><a href="#">Buys</a></li>
                     <li><a href="#">Download</a></li>
                 </ul>
                 <!-- script-for-menu -->
@@ -285,7 +284,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                                     <p class="author author-info"><a href="#" class="author">John Maniya</a></p>
                                                 </div>
                                                 <div class="slid-bottom-grid slid-bottom-right">
-                                                    <p class="views views-info">14,200 views</p>
+                                                    <p class="views views-info">2,114,200 views</p>
                                                 </div>
                                                 <div class="clearfix"> </div>
                                             </div>
@@ -428,7 +427,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                                     <p class="author author-info"><a href="#" class="author">John Maniya</a></p>
                                                 </div>
                                                 <div class="slid-bottom-grid slid-bottom-right">
-                                                    <p class="views views-info">1,14,200 views</p>
+                                                    <p class="views views-info">2,114,200 views</p>
                                                 </div>
                                                 <div class="clearfix"> </div>
                                             </div>
@@ -525,7 +524,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                                     <p class="author author-info"><a href="#" class="author">John Maniya</a></p>
                                                 </div>
                                                 <div class="slid-bottom-grid slid-bottom-right">
-                                                    <p class="views views-info">1,14,200 views</p>
+                                                    <p class="views views-info">2,114,200 views</p>
                                                 </div>
                                                 <div class="clearfix"> </div>
                                             </div>
@@ -698,7 +697,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                     <option>Chinese</option>
                                 </select>
                             </li>
-                            <li><a href="history.html" class="f-history">History</a></li>
                             <li><a href="#small-dialog5" class="play-icon popup-with-zoom-anim f-history f-help">Help</a></li>
                     </div>
                     </ul>

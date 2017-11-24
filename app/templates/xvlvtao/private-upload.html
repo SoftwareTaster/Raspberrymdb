@@ -40,9 +40,10 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <div class="top-search">
-                    <form class="navbar-form navbar-right">
-                        <input type="text" class="form-control" placeholder="Search...">
-                        <input type="submit" value=" ">
+                    <form class="navbar-form navbar-right" method="post">
+                        {{ form.hidden_tag() }}
+                        <input id="search_str" name="search_str" type="text" class="form-control" placeholder="{{ placeholder }}">
+                        <input type="submit" value="">
                     </form>
                 </div>
                 <div class="header-top-right">
@@ -132,14 +133,13 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
         </div>
         <div class="drop-navigation drop-navigation">
             <ul class="nav nav-sidebar">
-                <li ><a href="index1.html" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
+                <li><a href="index1.html" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
                 <li><a href="publish.html" class="user-icon"><span class="glyphicon glyphicon-home glyphicon-blackboard" aria-hidden="true"></span>Publish</a></li>
-                <li><a href="history.html" class="sub-icon"><span class="glyphicon glyphicon-home glyphicon-hourglass" aria-hidden="true"></span>History</a></li>
                 <li><a href="#" class="menu1"><span class="glyphicon glyphicon-film" aria-hidden="true"></span>Groups<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
                 <ul class="cl-effect-2">
-                    <li><a href="groups.html">Robin</a></li>
-                    <li><a href="#">Jack Ma</a></li>
-                    <li><a href="#">Pony</a></li>
+                    {% for group in groups %}
+                    <li><a href="groups.html">{{ group.nickname }}</a></li>
+                    {% endfor %}
                 </ul>
                 <!-- script-for-menu -->
                 <script>
@@ -151,9 +151,9 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                 </script>
                 <li class="active"><a href="#" class="menu"><span class="glyphicon glyphicon-film glyphicon-king" aria-hidden="true"></span>Private<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
                 <ul class="cl-effect-1">
-                    <li><a href="private.html">Upload</a></li>
+                    <li><a href="{{ url_for('private') }}">Upload</a></li>
                     <li><a href="#">Collects</a></li>
-                    <li><a href="#">Comments</a></li>
+                    <li><a href="#">Buys</a></li>
                     <li><a href="#">Download</a></li>
                 </ul>
                 <!-- script-for-menu -->
@@ -194,28 +194,24 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         </div>
                         <div class="clearfix"> </div>
                     </div>
-                    {% for mtype in medias1 %}
-                    {% for media in mtype %}
-                    {% if media.mtype == 'jpg' %}
+                    {% for mtype in medias1 %} {% for media in mtype %} {% if media.mtype == 'jpg' %}
                     <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
                         <div class="resent-grid-img recommended-grid-img">
-                            <a href="{{ url_for('single', mid=media.id, _external=True) }}"><img src="{{ media.furl }}" alt="" /></a>
+                            <a href="{{ url_for('single', mid=media.id, _external=True) }}"><img src="{{ media.curl }}" alt="" /></a>
                             <div class="time small-time sports-tome">
-                                <p>7:30</p>
+                                <p>{{ media.timestring }}</p>
                             </div>
-                            <div class="clck sports-clock">
-                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                            </div>
+                            <!--                             <div class="clck sports-clock">
+    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+</div> -->
                         </div>
                         <div class="resent-grid-info recommended-grid-info">
                             <h5><a href="{{ url_for('single', mid=media.id, _external=True) }}" class="title">{{ media.name }}</a></h5>
                             <p class="author"><a href="#" class="author">{{ user.nickname }}</a></p>
-                            <p class="views">2,114,200 views</p>
+                            <p class="views">{{ media.viewers }} views</p>
                         </div>
                     </div>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
+                    {% endif %} {% endfor %} {% endfor %}
                     <!-- <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
                         <div class="resent-grid-img recommended-grid-img">
                             <a href="single.html"><img src="images/g1.jpg" alt="" /></a>
@@ -294,28 +290,25 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         </div>
                         <div class="clearfix"> </div>
                     </div>
-                    {% for mtype in medias1 %}
-                    {% for media in mtype %}
-                    {% if media.mtype == 'mp3' %}
+                    {% for mtype in medias1 %} {% for media in mtype %} {% if media.mtype == 'mp3' %}
                     <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
                         <div class="resent-grid-img recommended-grid-img">
-                            <a href="{{ url_for('single', mid=media.id, _external=True) }}"></audio></a>
+                            <a href="{{ url_for('single', mid=media.id, _external=True) }}"><img src="{{ media.curl }}" alt="" />
+                            </a>
                             <div class="time small-time sports-tome">
-                                <p>7:30</p>
+                                <p>{{ media.timestring }}</p>
                             </div>
-                            <div class="clck sports-clock">
-                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                            </div>
+                            <!--                             <div class="clck sports-clock">
+    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+</div> -->
                         </div>
                         <div class="resent-grid-info recommended-grid-info">
                             <h5><a href="{{ url_for('single', mid=media.id, _external=True) }}" class="title">{{ media.name }}</a></h5>
                             <p class="author"><a href="#" class="author">{{ user.nickname }}</a></p>
-                            <p class="views">2,114,200 views</p>
+                            <p class="views">{{ media.viewers }} views</p>
                         </div>
                     </div>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
+                    {% endif %} {% endfor %} {% endfor %}
                     <!-- <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
                         <div class="resent-grid-img recommended-grid-img">
                             <a href="single.html"><img src="images/sp2.jpg" alt="" /></a>
@@ -378,28 +371,26 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         </div>
                         <div class="clearfix"> </div>
                     </div>
-                    {% for mtype in medias1 %}
-                    {% for media in mtype %}
-                    {% if media.mtype == 'mp4' %}
+                    {% for mtype in medias1 %} {% for media in mtype %} {% if media.mtype == 'mp4' %}
                     <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
                         <div class="resent-grid-img recommended-grid-img">
-                            <a href="{{ url_for('single', mid=media.id, _external=True) }}"><video src="{{ media.furl }}"></video></a>
+                            <a href="{{ url_for('single', mid=media.id, _external=True) }}">
+                                <img src="{{ media.curl }}" alt="" />
+                            </a>
                             <div class="time small-time sports-tome">
-                                <p>7:30</p>
+                                <p>{{ media.timestring }}</p>
                             </div>
-                            <div class="clck sports-clock">
-                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                            </div>
+                            <!--                             <div class="clck sports-clock">
+    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+</div> -->
                         </div>
                         <div class="resent-grid-info recommended-grid-info">
                             <h5><a href="{{ url_for('single', mid=media.id, _external=True) }}" class="title">{{ media.name }}</a></h5>
                             <p class="author"><a href="#" class="author">{{ user.nickname }}</a></p>
-                            <p class="views">2,114,200 views</p>
+                            <p class="views">{{ media.viewers }} views</p>
                         </div>
                     </div>
-                    {% endif %}
-                    {% endfor %}
-                    {% endfor %}
+                    {% endif %} {% endfor %} {% endfor %}
                     <!-- <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
                         <div class="resent-grid-img recommended-grid-img">
                             <a href="single.html"><img src="images/g2.jpg" alt="" /></a>
@@ -485,7 +476,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                 <option>Chinese</option>
                             </select>
                         </li>
-                        <li><a href="history.html" class="f-history">History</a></li>
                         <li><a href="#small-dialog5" class="play-icon popup-with-zoom-anim f-history f-help">Help</a></li>
                 </div>
                 </ul>

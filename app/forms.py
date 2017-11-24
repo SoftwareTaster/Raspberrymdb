@@ -26,4 +26,4 @@ class UploadForm(FlaskForm):
     submit = SubmitField(u'上传')
 
 class SearchForm(FlaskForm):
-	search_str = StringField('search_str', validators=[Required()])
+	search_str = TextField('search_str', validators=[Required()])

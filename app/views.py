@@ -7,11 +7,12 @@ from flask_login import login_user, logout_user, current_user, login_required # 
 from flask_uploads import IMAGES, AUDIO
 from app import app, db, lm, oid, files
 from .forms import LoginForm, EditForm, UploadForm, SearchForm
-from .models import User, Media, Group
+from .models import User, Media, Group, Issue
 from datetime import datetime
 
 from format import format
 from watermarking import wpic, wvideo
+from thumbit import make_thumb
 
 AUDIOS = AUDIO
 VIDEOS = ('mp4', 'ogg')
@@ -36,25 +37,12 @@ def before_request():
         db.session.commit()
 
 
-@app.route('/', methods = ['GET', 'POST'])
-def aboutus():
-    if g.user is not None and g.user.is_authenticated:
-        return redirect(url_for('index'))
-    return render_template("/xvlvtao/index.html", )
-
-
-@app.route('/index', methods = ['GET', 'POST'])
-@login_required
-def index():
-    # return render_template('xvlvtao/index1.html')
-    return render_template('xvlvtao/index1.html')
-
-
-@app.route('/index1', methods = ['GET', 'POST'])
+## ②私人媒体页、③群组媒体页、④公开媒体页：
+@app.route('/backindex', methods = ['GET', 'POST'])
 @login_required # 确保了这页只被已经登录的用户看到
 # 如果未登录访问了一个作了login_required限制的view，那么Flask-Login会默认flash一条消息，并且将重定向到login的view
 # 如果你没有指定login的view，那么Flask-Login将会抛出一个401错误
-def index1():
+def backindex():
     form = SearchForm()
     flag = '1'
     user = g.user
@@ -72,13 +60,13 @@ def index1():
         audio_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(AUDIOS)).filter(Media.name.like(search_str)).all()
         video_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(VIDEOS)).filter(Media.name.like(search_str)).all()
     else: # is not searching
-        image_medias_1 = Media.query.filter(Media.owner.any(User.id==g.user.id)).filter(Media.privilege==1).filter(Media.mtype.in_(IMAGES)).all()
-        audio_medias_1 = Media.query.filter(Media.owner.any(User.id==g.user.id)).filter(Media.privilege==1).filter(Media.mtype.in_(AUDIOS)).all()
-        video_medias_1 = Media.query.filter(Media.owner.any(User.id==g.user.id)).filter(Media.privilege==1).filter(Media.mtype.in_(VIDEOS)).all()
+        image_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.privilege==1).filter(Media.mtype.in_(IMAGES)).all()
+        audio_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.privilege==1).filter(Media.mtype.in_(AUDIOS)).all()
+        video_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.privilege==1).filter(Media.mtype.in_(VIDEOS)).all()
         users = map(item2id, User.query.filter(User.groups.any(Group.users.contains(g.user))).all())
-        image_medias_2 = Media.query.filter(Media.owner.any(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(IMAGES)).all()
-        audio_medias_2 = Media.query.filter(Media.owner.any(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(AUDIOS)).all()
-        video_medias_2 = Media.query.filter(Media.owner.any(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(VIDEOS)).all()
+        image_medias_2 = Media.query.filter(Media.owner.has(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(IMAGES)).all()
+        audio_medias_2 = Media.query.filter(Media.owner.has(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(AUDIOS)).all()
+        video_medias_2 = Media.query.filter(Media.owner.has(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(VIDEOS)).all()
         image_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(IMAGES)).all()
         audio_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(AUDIOS)).all()
         video_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(VIDEOS)).all()
@@ -94,53 +82,7 @@ def index1():
         medias1 = medias_1, medias2 = medias_2, medias3 = medias_3)
 
 
-@app.route('/single/<mid>', methods = ['GET', 'POST'])
-@login_required
-def single(mid):
-    return render_template("xvlvtao/single.html", mid=mid)
-
-
-@app.route('/private', methods = ['GET', 'POST'])
-@login_required
-def private():
-    form = SearchForm()
-    flag = '1'
-    user = g.user
-    if form.validate_on_submit(): # searching
-        flag = form.whichblock.data
-        search_str = '%' + form.search_str.data + '%'
-        image_medias_1 = Media.query.filter(Media.owner.any(User.id==g.user.id)).filter(Media.privilege==1).filter(Media.mtype.in_(IMAGES)).filter(Media.name.like(search_str)).all()
-        audio_medias_1 = Media.query.filter(Media.owner.any(User.id==g.user.id)).filter(Media.privilege==1).filter(Media.mtype.in_(AUDIOS)).filter(Media.name.like(search_str)).all()
-        video_medias_1 = Media.query.filter(Media.owner.any(User.id==g.user.id)).filter(Media.privilege==1).filter(Media.mtype.in_(VIDEOS)).filter(Media.name.like(search_str)).all()
-        users = map(item2id, User.query.filter(User.groups.any(Group.users.contains(g.user))).all())
-        image_medias_2 = Media.query.filter(Media.owner.any(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(IMAGES)).filter(Media.name.like(search_str)).all()
-        audio_medias_2 = Media.query.filter(Media.owner.any(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(AUDIOS)).filter(Media.name.like(search_str)).all()
-        video_medias_2 = Media.query.filter(Media.owner.any(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(VIDEOS)).filter(Media.name.like(search_str)).all()
-        image_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(IMAGES)).filter(Media.name.like(search_str)).all()
-        audio_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(AUDIOS)).filter(Media.name.like(search_str)).all()
-        video_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(VIDEOS)).filter(Media.name.like(search_str)).all()
-    else: # is not searching
-        image_medias_1 = Media.query.filter(Media.owner.any(User.id==g.user.id)).filter(Media.mtype.in_(IMAGES)).all()
-        audio_medias_1 = Media.query.filter(Media.owner.any(User.id==g.user.id)).filter(Media.mtype.in_(AUDIOS)).all()
-        video_medias_1 = Media.query.filter(Media.owner.any(User.id==g.user.id)).filter(Media.mtype.in_(VIDEOS)).all()
-        users = map(item2id, User.query.filter(User.groups.any(Group.users.contains(g.user))).all())
-        image_medias_2 = Media.query.filter(Media.owner.any(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(IMAGES)).all()
-        audio_medias_2 = Media.query.filter(Media.owner.any(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(AUDIOS)).all()
-        video_medias_2 = Media.query.filter(Media.owner.any(User.id.in_(users))).filter(Media.privilege.in_([2, 3])).filter(Media.mtype.in_(VIDEOS)).all()
-        image_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(IMAGES)).all()
-        audio_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(AUDIOS)).all()
-        video_medias_3 = Media.query.filter(Media.privilege==3).filter(Media.mtype.in_(VIDEOS)).all()
-    medias_1 = [image_medias_1, audio_medias_1, video_medias_1]
-    medias_2 = [image_medias_2, audio_medias_2, video_medias_2]
-    medias_3 = [image_medias_3, audio_medias_3, video_medias_3]
-    return render_template("xvlvtao/private.html",
-        title = 'Home',
-        form = form,
-        flag = flag,
-        user = user,
-        medias1 = medias_1, medias2 = medias_2, medias3 = medias_3)
-
-
+## 登录页：
 @app.route('/login', methods = ['GET', 'POST']) # 参数告诉Flask这个视图函数接受GET和POST请求，如果不带参数的话，视图只接受GET请求
 @oid.loginhandler # 告诉Flask-OpenID这是我们的登录视图函数
 def login():
@@ -185,12 +127,14 @@ def after_login(resp): # 参数resp包含了从OpenID提供商返回来的信息
     return redirect(request.args.get('next') or url_for('index')) # 在next页没有提供的情况下，我们会重定向到首页，否则会重定向到next页
 
 
+## 登出处理：
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('aboutus'))
 
 
+## 编辑页：
 @app.route('/user/<nickname>')
 @login_required
 def user(nickname):
@@ -213,6 +157,7 @@ def user(nickname):
             medias = medias)
 
 
+## 配置页：
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
@@ -243,60 +188,115 @@ def edit():
     return render_template('edit.html', form=form, groups = groups)
 
 
+def user_upload():
+    for file in request.files.getlist('file'):
+        filename = files.save(file, name = str(g.user.id) + '_' + str(len(g.user.medias.all()) + 1) + '.') # save uploaded medias in DIR`files` and get its name
+        # file_url = files.url(filename) # This function gets the URL a file uploaded to this set would be accessed at # TMD it's address of source file
+        format(filename) # change medias to the three format and save the covers
+        filename = filename.replace('.png', '.jpg').replace('.bmp', '.jpg').replace('.gif', '.jpg').replace('.wav', '.mp3').replace('.avi', '.mp4').replace('.mkv', '.mp4') # ......
+        g.media = Media()
+        g.media.name = os.path.splitext(file.filename)[0] # the original name of media
+        g.media.furl = url_for('static', filename='files/' + filename) # the storage path of media
+        g.media.mtype = os.path.splitext(filename)[1][1:] # the type of media which is jpg and mp3 and mp4
+        if g.media.mtype == 'jpg':
+            make_thumb(filename, 1024, 0)
+            cfilename = filename
+        elif g.media.mtype == 'mp3':
+            cfilename = filename.replace('.mp3', '.png')
+        else:
+            make_thumb(filename.replace('.mp4', '.png'), 720, 1)
+            cfilename = filename.replace('.mp4', '.png')
+        g.media.curl = url_for('static', filename='files/cover/' + cfilename)
+        g.media.privilege = 2 # default is 'shared in group'
+        g.media.timestamp = datetime.now()
+        g.media.timestring = g.media.timestamp.strftime('%b %d %H:%M')
+        g.media.user_id = g.user.id
+        g.media.viewers = 0
+        db.session.add(g.media)
+        db.session.commit()
+        g.user.medias.append(g.media)
+        db.session.add(g.user)
+        db.session.commit()
+## 一般用户的上传页面：
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_file():
     form = UploadForm()
     if form.validate_on_submit():
-        for file in request.files.getlist('file'):
-            filename = files.save(file, name = str(g.user.id) + '_' + str(len(g.user.medias) + 1) + '.')
-            # file_url = files.url(filename) # This function gets the URL a file uploaded to this set would be accessed at. # 妈的是源文件的地址链接
-            format(filename)
-            filename = filename.replace('.png', '.jpg').replace('.bmp', '.jpg').replace('.wav', '.mp3').replace('.avi', '.mp4').replace('.mkv', '.mp4') # ......
-            g.media = Media()
-            g.media.name = os.path.splitext(file.filename)[0]
-            g.media.furl = url_for('static', filename='files/' + filename)
-            g.media.mtype = os.path.splitext(filename)[1][1:]
-            g.media.privilege = 2 # default is 'shared in family'
-            g.media.timestamp = datetime.utcnow()
-            g.media.user_id = g.user.id
-            db.session.add(g.media)
-            db.session.commit()
-            g.user.medias.append(g.media)
-            db.session.add(g.user)
-            db.session.commit()
+        if g.user.level == 1: # normal users
+            user_upload()
+        if g.user.level == 2:
+            super_user_upload()
+        # for file in request.files.getlist('file'):
+        #     filename = files.save(file, name = str(g.user.id) + '_' + str(len(g.user.medias.all()) + 1) + '.')
+        #     # file_url = files.url(filename) # This function gets the URL a file uploaded to this set would be accessed at. # 妈的是源文件的地址链接
+        #     format(filename)
+        #     filename = filename.replace('.png', '.jpg').replace('.bmp', '.jpg').replace('.wav', '.mp3').replace('.avi', '.mp4').replace('.mkv', '.mp4') # ......
+        #     g.media = Media()
+        #     g.media.name = os.path.splitext(file.filename)[0]
+        #     g.media.furl = url_for('static', filename='files/' + filename)
+        #     g.media.mtype = os.path.splitext(filename)[1][1:]
+        #     g.media.privilege = 2 # default is 'shared in family'
+        #     g.media.timestamp = datetime.utcnow()
+        #     g.media.user_id = g.user.id
+        #     db.session.add(g.media)
+        #     db.session.commit()
+        #     g.user.medias.append(g.media)
+        #     db.session.add(g.user)
+        #     db.session.commit()
     return render_template('xvlvtao/upload.html', form=form)
-
-
+def super_user_upload():
+    for file in request.files.getlist('file'):
+        filename = files.save(file, name = str(g.user.id) + '_' + str(len(g.user.medias.all()) + 1) + '.')
+        format(filename)
+        filename = filename.replace('.png', '.jpg').replace('.bmp', '.jpg').replace('.wav', '.mp3').replace('.avi', '.mp4').replace('.mkv', '.mp4') # ......
+        if os.path.splitext(filename)[1][1:] == 'jpg':
+            wpic(filename, g.user.nickname)
+        if os.path.splitext(filename)[1][1:] == 'mp4':
+            wvideo(filename, g.user.nickname)
+        g.media = Media()
+        g.media.name = os.path.splitext(file.filename)[0]
+        g.media.furl = url_for('static', filename='files/' + filename)
+        g.media.mtype = os.path.splitext(filename)[1][1:]
+        g.media.privilege = 2 # default is 'shared in family'
+        g.media.timestamp = datetime.utcnow()
+        g.media.user_id = g.user.id
+        db.session.add(g.media)
+        db.session.commit()
+        g.user.medias.append(g.media)
+        db.session.add(g.user)
+        db.session.commit()
+## 特殊用户的上传页面：
 @app.route('/supload', methods=['GET', 'POST']) # 提供商
 @login_required
 def supload_file():
     form = UploadForm()
-    if form.validate_on_submit():
-        for file in request.files.getlist('file'):
-            filename = files.save(file, name = str(g.user.id) + '_' + str(len(g.user.medias) + 1) + '.')
-            # file_url = files.url(filename) # This function gets the URL a file uploaded to this set would be accessed at. # 妈的是源文件的地址链接
-            format(filename)
-            filename = filename.replace('.png', '.jpg').replace('.bmp', '.jpg').replace('.wav', '.mp3').replace('.avi', '.mp4').replace('.mkv', '.mp4') # ......
-            if os.path.splitext(filename)[1][1:] == 'jpg':
-                wpic(filename, g.user.nickname)
-            if os.path.splitext(filename)[1][1:] == 'mp4':
-                wvideo(filename, g.user.nickname)
-            g.media = Media()
-            g.media.name = os.path.splitext(file.filename)[0]
-            g.media.furl = url_for('static', filename='files/' + filename)
-            g.media.mtype = os.path.splitext(filename)[1][1:]
-            g.media.privilege = 2 # default is 'shared in family'
-            g.media.timestamp = datetime.utcnow()
-            g.media.user_id = g.user.id
-            db.session.add(g.media)
-            db.session.commit()
-            g.user.medias.append(g.media)
-            db.session.add(g.user)
-            db.session.commit()
+    # if form.validate_on_submit():
+    #     for file in request.files.getlist('file'):
+    #         filename = files.save(file, name = str(g.user.id) + '_' + str(len(g.user.medias.all()) + 1) + '.')
+    #         # file_url = files.url(filename) # This function gets the URL a file uploaded to this set would be accessed at. # 妈的是源文件的地址链接
+    #         format(filename)
+    #         filename = filename.replace('.png', '.jpg').replace('.bmp', '.jpg').replace('.wav', '.mp3').replace('.avi', '.mp4').replace('.mkv', '.mp4') # ......
+    #         if os.path.splitext(filename)[1][1:] == 'jpg':
+    #             wpic(filename, g.user.nickname)
+    #         if os.path.splitext(filename)[1][1:] == 'mp4':
+    #             wvideo(filename, g.user.nickname)
+    #         g.media = Media()
+    #         g.media.name = os.path.splitext(file.filename)[0]
+    #         g.media.furl = url_for('static', filename='files/' + filename)
+    #         g.media.mtype = os.path.splitext(filename)[1][1:]
+    #         g.media.privilege = 2 # default is 'shared in family'
+    #         g.media.timestamp = datetime.utcnow()
+    #         g.media.user_id = g.user.id
+    #         db.session.add(g.media)
+    #         db.session.commit()
+    #         g.user.medias.append(g.media)
+    #         db.session.add(g.user)
+    #         db.session.commit()
     return render_template('upload.html', form=form)
 
 
+## 编辑页处理：
 @app.route('/control', methods=['GET', 'POST'])
 @login_required
 def control_file():
@@ -325,6 +325,7 @@ def control_file():
     return redirect('/user/' + g.user.nickname)
 
 
+## 购买请求：
 @app.route('/ask4', methods=['GET', 'POST'])
 @login_required
 def ask_for_file():
@@ -335,6 +336,7 @@ def ask_for_file():
     return redirect(url_for('index'))
 
 
+## 完善信息请求：
 @app.route('/phone', methods=['GET', 'POST'])
 @login_required
 def set_phone():
@@ -344,13 +346,62 @@ def set_phone():
     return redirect(url_for('index'))
 
 
-@app.route('/player/<mid>', methods=['GET', 'POST'])
+# 测试：
+@app.route('/test')
+def test():
+    return redirect(url_for('backindex')) # 跳转到后端的主页
+
+
+##############################################################################################################################################################################################################################################
+
+
+@app.route('/', methods = ['GET', 'POST']) # 前端根目录：产品与团队的介绍页面
+def aboutus():
+    if g.user is not None and g.user.is_authenticated: # 如已登录，跳至主页
+        return redirect(url_for('index'))
+    return render_template("/xvlvtao/index.html")
+
+
+@app.route('/index', methods = ['GET', 'POST']) # 前端主页，Home
+@login_required # 需要登录方能访问
+def index():
+    user = g.user
+    return render_template('xvlvtao/index1.html', user = user, groups = user.groups.all())
+
+
+@app.route('/private', methods = ['GET', 'POST'])
+@login_required
+def private():
+    form = SearchForm()
+    user = g.user
+    if form.validate_on_submit(): # searching
+        search_str = '%' + form.search_str.data + '%'
+        image_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(IMAGES)).filter(Media.name.like(search_str)).all()
+        audio_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(AUDIOS)).filter(Media.name.like(search_str)).all()
+        video_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(VIDEOS)).filter(Media.name.like(search_str)).all()
+    else: # is not searching # 方法has()用于一对多关系，方法any()用于多对多关系
+        image_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(IMAGES)).all()
+        audio_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(AUDIOS)).all()
+        video_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(VIDEOS)).all()
+    medias_1 = [image_medias_1, audio_medias_1, video_medias_1]
+    if form.search_str.data:
+        placeholder = form.search_str.data
+    else:
+        placeholder = 'Search...'
+    return render_template("xvlvtao/private-upload.html", title = 'Home',
+        form = form, placeholder = placeholder,
+        user = user,
+        groups = user.groups.all(),
+        medias1 = medias_1)
+
+
+# Media Player
+@app.route('/single/<mid>', methods = ['GET', 'POST'])
+@login_required
+def single(mid):
+    return render_template("xvlvtao/single.html", mid=mid)
+@app.route('/player/<mid>', methods = ['GET', 'POST'])
 @login_required
 def player(mid):
     m = Media.query.filter(Media.id == mid).first()
     return render_template("xvlvtao/videoplayer.html", m=m)
-
-
-@app.route('/test')
-def test():
-    return redirect(url_for('index1'))

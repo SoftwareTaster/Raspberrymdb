@@ -13,11 +13,17 @@ from datetime import datetime
 from format import format
 from watermarking import wpic, wvideo
 from thumbit import make_thumb
+from PIL import Image
+import hashlib
+import qrcode
+import subprocess
 
 AUDIOS = AUDIO
 VIDEOS = ('mp4', 'ogg')
 
-filespath = os.path.join(os.getcwd(), 'files')
+# F:\\source\\Raspberrymdb
+filespath = os.path.join(os.getcwd(), 'app\\static\\files')
+qrpath = os.path.join(filespath, 'qrcode')
 
 def item2id(x):
     return x.id
@@ -341,9 +347,111 @@ def ask_for_file():
 @login_required
 def set_phone():
     g.user.phone = request.args.get('phonenumber')
+    g.user.nickname = request.args.get('nickname')
+    g.user.about_me = request.args.get('about_me')
     db.session.add(g.user)
     db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(request.referrer or url_for('index'))
+
+
+## 创建群组请求：
+@app.route('/buildgroup', methods=['GET', 'POST'])
+@login_required
+def build_group():
+    g.group = Group()
+    g.group.nickname = request.args.get('groupname')
+    print(request.args.get('groupname'))
+    hash_md5 = hashlib.md5(g.group.nickname)
+    g.group.secretkey = hash_md5.hexdigest()
+    imm = qrcode.make(g.group.secretkey).resize((100, 100), Image.ANTIALIAS)
+    qrname = os.path.join(qrpath, g.group.nickname) + '.bmp'
+    imm.save(qrname)
+    g.group.qrCode = url_for('static', filename='files/qrcode/' + os.path.split(qrname)[1])
+    g.group.users.append(g.user)
+    db.session.add(g.group)
+    db.session.add(g.user)
+    db.session.commit()
+    return redirect(request.referrer or url_for('index'))
+
+
+## 加入群组请求
+@app.route('/uploadcode', methods=['GET', 'POST'])
+@login_required
+def upload_code():
+    form = UploadForm()
+    if form.validate_on_submit():
+        img = request.files.get('file')
+        filename = hashlib.md5(g.user.nickname).hexdigest()[:10]
+        image = files.save(img, name=filename + '.')
+        ipath = filespath + '\\' + image
+        keyString = subprocess.check_output(["ZBar\\bin\\zbarimg", "-q", ipath])[8:]
+        GetGroup = Group.query.filter(Group.secretkey == keyString.strip()).first()
+        print(keyString.strip())
+        print(GetGroup)
+        if GetGroup:
+            GetGroup.users.append(g.user)
+            db.session.add(GetGroup)
+            db.session.commit()
+            os.remove(ipath)
+            return redirect(url_for('index'))
+        os.remove(ipath)
+    return render_template('xvlvtao/upload-qrcode.html', form=form)
+
+
+## 收藏请求：
+@app.route('/likeit/<int:mid>', methods=['GET', 'POST'])
+@login_required
+def likeit(mid):
+    g.user.favs.append(Media.query.filter(Media.id==mid).first())
+    db.session.add(g.user)
+    db.session.commit()
+    return redirect(request.referrer or url_for('index'))
+
+
+## 购买请求：
+@app.route('/buyit/<int:iid>', methods=['GET', 'POST'])
+@login_required
+def buyit(iid):
+    g.user.buys.append(Issue.query.filter(Issue.id==iid).first())
+    db.session.add(g.user)
+    db.session.commit()
+    return redirect(request.referrer or url_for('index'))
+
+
+## 编辑请求：
+@app.route('/editit/<int:eid>', methods=['GET', 'POST'])
+@login_required
+def editit(eid):
+    g.media = Media.query.filter(Media.id==eid).first()
+    if request.args.get('newname'):
+        g.media.name = request.args.get('newname')
+    if request.args.get('newintro'):
+        g.media.about = request.args.get('newintro')
+    if request.args.get('privilege'):
+        g.media.privilege = 2
+    else:
+        g.media.privilege = 1
+    db.session.add(g.media)
+    db.session.commit()
+    return redirect(request.referrer or url_for('index'))
+
+
+## 编辑请求：
+@app.route('/Editit/<int:eid>', methods=['GET', 'POST'])
+@login_required
+def Editit(eid):
+    g.issue = Issue.query.filter(Issue.id==eid).first()
+    if request.args.get('newname'):
+        g.issue.name = request.args.get('newname')
+    if request.args.get('newintro'):
+        g.issue.about = request.args.get('newintro')
+    if request.args.get('privilege'):
+        g.media.privilege = 2 # !!!
+    else:
+        g.media.privilege = 1
+    db.session.add(g.issue)
+    db.session.commit()
+    return redirect(request.referrer or url_for('index'))
 
 
 # 测试：
@@ -395,13 +503,107 @@ def private():
         medias1 = medias_1)
 
 
+@app.route('/private-download', methods = ['GET', 'POST'])
+@login_required
+def private_download():
+    form = SearchForm()
+    user = g.user
+    if form.validate_on_submit(): # searching
+        search_str = '%' + form.search_str.data + '%'
+        image_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(IMAGES)).filter(Media.name.like(search_str)).all()
+        audio_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(AUDIOS)).filter(Media.name.like(search_str)).all()
+        video_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(VIDEOS)).filter(Media.name.like(search_str)).all()
+    else: # is not searching # 方法has()用于一对多关系，方法any()用于多对多关系
+        image_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(IMAGES)).all()
+        audio_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(AUDIOS)).all()
+        video_medias_1 = Media.query.filter(Media.owner.has(User.id==g.user.id)).filter(Media.mtype.in_(VIDEOS)).all()
+    medias_1 = [image_medias_1, audio_medias_1, video_medias_1]
+    if form.search_str.data:
+        placeholder = form.search_str.data
+    else:
+        placeholder = 'Search...'
+    return render_template("xvlvtao/download.html", title = 'Home',
+        form = form, placeholder = placeholder,
+        user = user,
+        groups = user.groups.all(),
+        medias1 = medias_1)
+
+
+@app.route('/private-collect', methods = ['GET', 'POST'])
+@login_required
+def private_collect():
+    form = SearchForm()
+    user = g.user
+    if form.validate_on_submit(): # searching
+        search_str = '%' + form.search_str.data + '%'
+        image_medias_1 = Media.query.filter(Media.favors.any(User.id==g.user.id)).filter(Media.mtype.in_(IMAGES)).filter(Media.name.like(search_str)).all()
+        audio_medias_1 = Media.query.filter(Media.favors.any(User.id==g.user.id)).filter(Media.mtype.in_(AUDIOS)).filter(Media.name.like(search_str)).all()
+        video_medias_1 = Media.query.filter(Media.favors.any(User.id==g.user.id)).filter(Media.mtype.in_(VIDEOS)).filter(Media.name.like(search_str)).all()
+    else: # is not searching # 方法has()用于一对多关系，方法any()用于多对多关系
+        image_medias_1 = Media.query.filter(Media.favors.any(User.id==g.user.id)).filter(Media.mtype.in_(IMAGES)).all()
+        audio_medias_1 = Media.query.filter(Media.favors.any(User.id==g.user.id)).filter(Media.mtype.in_(AUDIOS)).all()
+        video_medias_1 = Media.query.filter(Media.favors.any(User.id==g.user.id)).filter(Media.mtype.in_(VIDEOS)).all()
+    medias_1 = [image_medias_1, audio_medias_1, video_medias_1]
+    if form.search_str.data:
+        placeholder = form.search_str.data
+    else:
+        placeholder = 'Search...'
+    return render_template("xvlvtao/collects.html", title = 'Home',
+        form = form, placeholder = placeholder,
+        user = user,
+        groups = user.groups.all(),
+        medias1 = medias_1)
+
+
+@app.route('/group/<int:gid>', methods = ['GET', 'POST'])
+@login_required
+def group(gid):
+    form = SearchForm()
+    user = g.user
+    users = User.query.filter(User.groups.any(Group.id == gid)).all()
+    if form.validate_on_submit(): # searching
+        search_str = '%' + form.search_str.data + '%'
+        image_medias_1 = Media.query.filter(Media.owner.has(User.id.in_(map(item2id, users)))).filter(Media.privilege==2).filter(Media.mtype.in_(IMAGES)).filter(Media.name.like(search_str)).all()
+        audio_medias_1 = Media.query.filter(Media.owner.has(User.id.in_(map(item2id, users)))).filter(Media.privilege==2).filter(Media.mtype.in_(AUDIOS)).filter(Media.name.like(search_str)).all()
+        video_medias_1 = Media.query.filter(Media.owner.has(User.id.in_(map(item2id, users)))).filter(Media.privilege==2).filter(Media.mtype.in_(VIDEOS)).filter(Media.name.like(search_str)).all()
+    else: # is not searching # 方法has()用于一对多关系，方法any()用于多对多关系
+        image_medias_1 = Media.query.filter(Media.owner.has(User.id.in_(map(item2id, users)))).filter(Media.privilege==2).filter(Media.mtype.in_(IMAGES)).all()
+        audio_medias_1 = Media.query.filter(Media.owner.has(User.id.in_(map(item2id, users)))).filter(Media.privilege==2).filter(Media.mtype.in_(AUDIOS)).all()
+        video_medias_1 = Media.query.filter(Media.owner.has(User.id.in_(map(item2id, users)))).filter(Media.privilege==2).filter(Media.mtype.in_(VIDEOS)).all()
+    medias_1 = [image_medias_1, audio_medias_1, video_medias_1]
+    if form.search_str.data:
+        placeholder = form.search_str.data
+    else:
+        placeholder = 'Search...'
+    return render_template("xvlvtao/group.html", title = 'Home',
+        form = form, placeholder = placeholder,
+        user = user,
+        groups = user.groups.all(),
+        medias1 = medias_1)
+
+
 # Media Player
 @app.route('/single/<mid>', methods = ['GET', 'POST'])
 @login_required
 def single(mid):
-    return render_template("xvlvtao/single.html", mid=mid)
+    m = Media.query.filter(Media.id == mid).first()
+    if m:
+        m.viewers += 1
+        db.session.add(m)
+        db.session.commit() # one more views
+        m = Media.query.filter(Media.id == mid).first()
+        t = m.timestamp.strftime('%A %Y-%m-%d %H:%M:%S')
+    else:
+        t = ""
+    UpNext = Media.query.filter(Media.owner.has(User.id==g.user.id)).all()[:7]
+    return render_template("xvlvtao/single.html", mid=mid, m=m, t=t, groups = g.user.groups.all(), UpNext = UpNext)
 @app.route('/player/<mid>', methods = ['GET', 'POST'])
 @login_required
 def player(mid):
     m = Media.query.filter(Media.id == mid).first()
-    return render_template("xvlvtao/videoplayer.html", m=m)
+    if m.mtype == 'mp3':
+        return render_template("xvlvtao/musicplayer.html", m=m)
+    elif m.mtype == 'mp4':
+        return render_template("xvlvtao/videoplayer.html", m=m)
+    else:
+        return render_template("xvlvtao/photobox.html", m=m)

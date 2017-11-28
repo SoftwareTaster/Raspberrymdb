@@ -13,6 +13,7 @@ class Group(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     nickname = db.Column(db.String(64), index = True, unique = True)
     secretkey = db.Column(db.String(64), unique = True) # 群组的密钥，用户输入此密钥以加入群组
+    qrCode = db.Column(db.String(200)) # make a qrcode using secret key
     users = db.relationship('User', secondary=inthe, backref=db.backref('groups', lazy='dynamic'))
 
     def __repr__(self):
@@ -74,6 +75,7 @@ class Media(db.Model):
     timestring = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     viewers = db.Column(db.Integer) # 浏览数量，仅在播放页面里计数
+    about = db.Column(db.String(200)) # about this media
 
     def __repr__(self): # 告诉Python如何打印这个类的对象
         return '<Media %r>' % (self.name) # 改成一对多！实际拥有者只有一个，要他允许才能从媒体库中将其删除。
@@ -89,6 +91,7 @@ class Issue(db.Model):
     timestring = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     viewers = db.Column(db.Integer) # 浏览数量，仅在播放页面里计数
+    about = db.Column(db.String(200)) # about this media
 
     def __repr__(self): # 告诉Python如何打印这个类的对象
         return '<Issue %r>' % (self.name) # 改成一对多！实际拥有者只有一个，要他允许才能从媒体库中将其删除。

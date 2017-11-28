@@ -36,7 +36,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index1.html"><h1><img src="{{ url_for('static', filename='xvlvtao/system/images/logo.png') }}" alt="" /></h1></a>
+                <a class="navbar-brand" href="{{ url_for('index') }}"><h1><img src="{{ url_for('static', filename='xvlvtao/system/images/logo.png') }}" alt="" /></h1></a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <div class="top-search">
@@ -59,15 +59,23 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         <!--//pop-up-box -->
                         <div id="small-dialog2" class="mfp-hide">
                             <h3>Personal Message</h3>
-                            <div class="social-sits">
-                                <div class="facebook-button">
-                                    <a href="#">Connect with Facebook</a>
+                            <div class="social-sits" style="padding-top: 6.5em;">
+                                <script type="text/javascript">
+                                function BuildGroup() {
+                                    document.getElementById("BuildGroupForm").submit();
+                                }
+                                </script>
+                                <form id="BuildGroupForm" action="{{ url_for('build_group') }}">
+                                    <input type="text" class="email" name="groupname" placeholder="Group Name" pattern=".{3,}" title="Minimum 3 characters required" autocomplete="on" style="width: 90%; margin-bottom: 2em; padding: 10px; font-size: 14px; outline: none; color: #817F7F; border: solid 1px #817F7F;" />
+                                    <div class="facebook-button" style="text-align: center; margin-right: 3em; margin-bottom: 7em;">
+                                        <a href="#" style="font-size: 15px;" onclick="javascript:BuildGroup();">Build a Group</a>
+                                    </div>
+                                </form>
+                                <div class="chrome-button" style="text-align: center; margin-right: 3em;">
+                                    <a href="uploadcode">Join in a Group</a>
                                 </div>
-                                <div class="chrome-button">
-                                    <a href="#">Connect with Google</a>
-                                </div>
-                                <div class="button-bottom">
-                                    <p>You can invite friends these acounts </p>
+                                <div class="button-bottom" style="text-align: center; margin-right: 3em; margin-top: 3em;">
+                                    <p>Appreciate for filling out the blank!</p>
                                 </div>
                             </div>
                             <div class="signup">
@@ -77,7 +85,10 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                 }
                                 </script>
                                 <form id="147258" action="{{ url_for('set_phone') }}">
-                                    <input type="text" name="phonenumber" class="email" placeholder="Mobile Number" maxlength="10" pattern="[1-9]{1}\d{9}" title="Enter a valid mobile number" />
+                                    <input type="text" class="email" name="nickname" placeholder="Nickname" value="{% if user.nickname %}{{ user.nickname }}{% endif %}" pattern=".{3,}" title="Minimum 3 characters required" autocomplete="on" />
+                                    <input type="text" class="email" placeholder="Email" value="{{ user.email }}" pattern="([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?" title="Enter a valid email" readonly="readonly" />
+                                    <input type="text" name="phonenumber" class="email" placeholder="Mobile Number" value="{% if user.phone %}{{ user.phone }}{% endif %}" minlength="11" maxlength="11" pattern="[1-9]{1}\d{9}" title="Enter a valid mobile number" />
+                                    <textarea name="about_me" class="email" placeholder="About Me" value="{{ user.about_me }}" maxlength="120" title="Enter something about me" style="width: 90%; height: 100px; margin: 10px 0; padding: 10px; font-size: 14px; outline: none; color: #817F7F; border: solid 1px #817F7F;">{{ user.about_me }}</textarea>
                                     <div class="continue-button">
                                         <a href="#small-dialog3" class="hvr-shutter-out-horizontal play-icon popup-with-zoom-anim" onclick="javascript:SetPhone();">COMPLETE</a>
                                     </div>
@@ -114,7 +125,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         <a href="#small-dialog" class="play-icon popup-with-zoom-anim">Log Out</a>
                         <div id="small-dialog" class="mfp-hide">
                             <h3>Log Out</h3>
-                            <p>Log out successfully!</p>
                             <a href="{{ url_for('logout') }}">OK</a>
                         </div>
                         <div class="clearfix"> </div>
@@ -133,12 +143,12 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
         </div>
         <div class="drop-navigation drop-navigation">
             <ul class="nav nav-sidebar">
-                <li><a href="index1.html" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
+                <li><a href="{{ url_for('index') }}" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
                 <li><a href="publish.html" class="user-icon"><span class="glyphicon glyphicon-home glyphicon-blackboard" aria-hidden="true"></span>Publish</a></li>
                 <li><a href="#" class="menu1"><span class="glyphicon glyphicon-film" aria-hidden="true"></span>Groups<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
                 <ul class="cl-effect-2">
                     {% for group in groups %}
-                    <li><a href="groups.html">{{ group.nickname }}</a></li>
+                    <li><a href="/group/{{ group.id }}">{{ group.nickname }}</a></li>
                     {% endfor %}
                 </ul>
                 <!-- script-for-menu -->
@@ -152,9 +162,9 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                 <li class="active"><a href="#" class="menu"><span class="glyphicon glyphicon-film glyphicon-king" aria-hidden="true"></span>Private<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
                 <ul class="cl-effect-1">
                     <li><a href="{{ url_for('private') }}">Upload</a></li>
-                    <li><a href="#">Collects</a></li>
+                    <li><a href="{{ url_for('private_collect') }}">Collects</a></li>
                     <li><a href="#">Buys</a></li>
-                    <li><a href="#">Download</a></li>
+                    <li><a href="{{ url_for('private_download') }}">Download</a></li>
                 </ul>
                 <!-- script-for-menu -->
                 <script>
@@ -187,10 +197,9 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                 <div class="recommended-grids english-grid">
                     <div class="recommended-info">
                         <div class="heading">
-                            <h3>Pictures</h3>
+                            <h3>Photos</h3>
                         </div>
                         <div class="heading-right">
-                            <a href="#small-dialog8" class="play-icon popup-with-zoom-anim">Collect</a>
                         </div>
                         <div class="clearfix"> </div>
                     </div>
@@ -286,7 +295,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <h3>Musics</h3>
                         </div>
                         <div class="heading-right">
-                            <a href="#small-dialog8" class="play-icon popup-with-zoom-anim">Collect</a>
                         </div>
                         <div class="clearfix"> </div>
                     </div>
@@ -367,7 +375,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <h3>Videos</h3>
                         </div>
                         <div class="heading-right">
-                            <a href="#small-dialog8" class="play-icon popup-with-zoom-anim">Collect</a>
                         </div>
                         <div class="clearfix"> </div>
                     </div>

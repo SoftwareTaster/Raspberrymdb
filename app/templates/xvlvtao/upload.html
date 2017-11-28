@@ -41,7 +41,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
             <div id="navbar" class="navbar-collapse collapse">
                 <div class="top-search">
                     <form class="navbar-form navbar-right">
-                        <input type="text" class="form-control" placeholder="Search...">
+                        <input type="text" class="form-control" placeholder="Search..." readonly="readonly">
                         <input type="submit" value=" ">
                     </form>
                 </div>
@@ -50,7 +50,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         <a href="{{ url_for('upload_file') }}">Upload</a>
                     </div>
                     <div class="signin">
-                        <a href="#small-dialog2" class="play-icon popup-with-zoom-anim">Setting</a>
                         <!-- pop-up-box -->
                         <script type="text/javascript" src="{{ url_for('static', filename='xvlvtao/system/js/modernizr.custom.min.js') }}"></script>
                         <link href="{{ url_for('static', filename='xvlvtao/system/css/popuo-box.css') }}" rel="stylesheet" type="text/css" media="all" />
@@ -108,7 +107,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         <a href="#small-dialog" class="play-icon popup-with-zoom-anim">Log Out</a>
                         <div id="small-dialog" class="mfp-hide">
                             <h3>Log Out</h3>
-                            <p>Log out successfully!</p>
+                            <a href="{{ url_for('logout') }}">OK</a>
                         </div>
                         <div class="clearfix"> </div>
                     </div>

@@ -5,7 +5,7 @@
     <title>Home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="keywords" content="My Play Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template, 
+    <meta name="keywords" content="My Play Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template,
 Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
     <script type="application/x-javascript">
     addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
@@ -36,7 +36,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index1.html"><h1><img src="{{ url_for('static', filename='xvlvtao/system/images/logo.png') }}" alt="" /></h1></a>
+                <a class="navbar-brand" href="{{ url_for('index') }}"><h1><img src="{{ url_for('static', filename='xvlvtao/system/images/logo.png') }}" alt="" /></h1></a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <div class="top-search">
@@ -132,14 +132,13 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
         </div>
         <div class="drop-navigation drop-navigation">
             <ul class="nav nav-sidebar">
-                <li><a href="index1.html" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
+                <li><a href="{{ url_for('index') }}" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
                 <li><a href="publish.html" class="user-icon"><span class="glyphicon glyphicon-home glyphicon-blackboard" aria-hidden="true"></span>Publish</a></li>
-                <li><a href="history.html" class="sub-icon"><span class="glyphicon glyphicon-home glyphicon-hourglass" aria-hidden="true"></span>History</a></li>
                 <li><a href="#" class="menu1"><span class="glyphicon glyphicon-film" aria-hidden="true"></span>Groups<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
                 <ul class="cl-effect-2">
-                    <li><a href="groups.html">Robin</a></li>
-                    <li><a href="#">Jack Ma</a></li>
-                    <li><a href="#">Pony</a></li>
+                    {% for group in groups %}
+                    <li><a href="/group/{{ group.id }}">{{ group.nickname }}</a></li>
+                    {% endfor %}
                 </ul>
                 <!-- script-for-menu -->
                 <script>
@@ -153,8 +152,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                 <ul class="cl-effect-1">
                     <li><a href="{{ url_for('private') }}">Upload</a></li>
                     <li><a href="#">Collects</a></li>
-                    <li><a href="#">Comments</a></li>
-                    <li><a href="#">Download</a></li>
+                    <li><a href="#">Buys</a></li>
+                    <li><a href="{{ url_for('private_download') }}">Download</a></li>
                 </ul>
                 <!-- script-for-menu -->
                 <script>
@@ -183,27 +182,37 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
     </div>
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         <div class="show-top-grids">
-            <div class="col-sm-8 single-left">
-                <div class="song">
-                    <div class="song-info">
-                        <h3>电影标题</h3>
+            <div class="col-sm-9 single-left">
+                <div class="song" style="width: 100%;">
+                    <div class="song-info" id="removeme">
+                        <h3>{{ m.name }}</h3>
                     </div>
                     <div class="video-grid">
-                        <iframe src="{{ url_for('player', mid=mid, _external=True) }}" allowfullscreen></iframe>
+                        {% if m.mtype == 'jpg' %}
+                        <iframe id="6666" src="{{ url_for('player', mid=mid, _external=True) }}" allowfullscreen style="height: 300px" onload="dothis()"></iframe>
+                        <script type="text/javascript">
+                        function dothis() {
+                            document.getElementById("6666").style.height = document.getElementById("6666").contentDocument.getElementById("2333").height + 110 + "px";
+                            document.getElementById("removeme").parentNode.removeChild(document.getElementById("removeme"));
+                        }
+                        </script>
+                        {% else %}
+                        <iframe src="{{ url_for('player', mid=mid, _external=True) }}" style="height: 550px;" allowfullscreen></iframe>
+                        {% endif %}
                     </div>
                 </div>
-                <div class="song-grid-right">
-                    <div class="share">
-                        <h5>Share this</h5>
-                        <ul>
-                            <li><a href="#" class="icon fb-icon">Facebook</a></li>
-                            <li><a href="#" class="icon twitter-icon">Twitter</a></li>
-                            <li><a href="#" class="icon like">Like</a></li>
-                            <li><a href="#" class="icon comment-icon">Comments</a></li>
-                            <li class="view">200+</li>
-                        </ul>
-                    </div>
-                </div>
+                <!--                 <div class="song-grid-right">
+    <div class="share">
+        <h5>Share this</h5>
+        <ul>
+            <li><a href="#" class="icon fb-icon">Facebook</a></li>
+            <li><a href="#" class="icon twitter-icon">Twitter</a></li>
+            <li><a href="#" class="icon like">Like</a></li>
+            <li><a href="#" class="icon comment-icon">Comments</a></li>
+            <li class="view">200+</li>
+        </ul>
+    </div>
+</div> -->
                 <div class="clearfix"> </div>
                 <div class="published">
                     <script src="{{ url_for('static', filename='xvlvtao/system/jquery.min.js') }}"></script>
@@ -225,8 +234,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                     <div class="load_more">
                         <ul id="myList">
                             <li>
-                                <h4>Published on 15 June 2015</h4>
-                                <p>内容介绍</p>
+                                <h4>Uploaded on {{ t }}</h4>
+                                <p>内容介绍：{{ m.about }}</p>
                             </li>
                             <li>
                                 <p>Nullam fringilla sagittis tortor ut rhoncus. Nam vel ultricies erat, vel sodales leo. Maecenas pellentesque, est suscipit laoreet tincidunt, ipsum tortor vestibulum leo, ac dignissim diam velit id tellus. Morbi luctus velit quis semper egestas. Nam condimentum sem eget ex iaculis bibendum. Nam tortor felis, commodo faucibus sollicitudin ac, luctus a turpis. Donec congue pretium nisl, sed fringilla tellus tempus in.</p>
@@ -244,7 +253,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         </ul>
                     </div>
                 </div>
-                <div class="all-comments">
+                <!-- <div class="all-comments">
                     <div class="all-comments-info">
                         <a href="#">All Comments ()</a>
                         <div class="box">
@@ -269,8 +278,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <h5>Tom Brown</h5>
                             <div class="media-left">
                                 <a href="#">
-										
-									</a>
+
+                                    </a>
                             </div>
                             <div class="media-body">
                                 <p>真的太好看了！！！！！</p>
@@ -281,8 +290,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <h5>Mark Johnson</h5>
                             <div class="media-left">
                                 <a href="#">
-										
-									</a>
+
+                                    </a>
                             </div>
                             <div class="media-body">
                                 <p>真的NB！！！！！！</p>
@@ -293,8 +302,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <h5>Steven Smith</h5>
                             <div class="media-left">
                                 <a href="#">
-										
-									</a>
+
+                                    </a>
                             </div>
                             <div class="media-body">
                                 <p>6666666666666666</p>
@@ -305,8 +314,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <h5>Marry Johne</h5>
                             <div class="media-left">
                                 <a href="#">
-										
-									</a>
+
+                                    </a>
                             </div>
                             <div class="media-body">
                                 <p>怎么这么牛啊阿啊阿啊阿啊阿啊</p>
@@ -317,8 +326,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <h5>Mark Johnson</h5>
                             <div class="media-left">
                                 <a href="#">
-										
-									</a>
+
+                                    </a>
                             </div>
                             <div class="media-body">
                                 <p>苟利国家生死以～</p>
@@ -329,8 +338,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <h5>Mark Johnson</h5>
                             <div class="media-left">
                                 <a href="#">
-										
-									</a>
+
+                                    </a>
                             </div>
                             <div class="media-body">
                                 <p>sdfisdfksdfksdfkjnsdkjfnskdbfsbcjxzbvkxcbvcxkvlzxv</p>
@@ -341,8 +350,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <h5>Peter Johnson</h5>
                             <div class="media-left">
                                 <a href="#">
-										
-									</a>
+
+                                    </a>
                             </div>
                             <div class="media-body">
                                 <p>风骚啊阿啊</p>
@@ -350,23 +359,25 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
-            <div class="col-md-4 single-right">
+            <div class="col-md-3 single-right">
                 <h3>Up Next</h3>
                 <div class="single-grid-right">
+                    {% for upnext in UpNext %}
                     <div class="single-right-grids">
                         <div class="col-md-4 single-right-grid-left">
-                            <a href="single.html"><img src="images/r1.jpg" alt="" /></a>
+                            <a href="{{ url_for('single', mid=upnext.id, _external=True) }}"><img src="{{ upnext.curl }}" alt="" /></a>
                         </div>
                         <div class="col-md-8 single-right-grid-right">
-                            <a href="single.html" class="title"> Nullam interdum metus</a>
-                            <p class="author"><a href="#" class="author">John Maniya</a></p>
-                            <p class="views">2,114,200 views</p>
+                            <a href="{{ url_for('single', mid=upnext.id, _external=True) }}" class="title">{{ upnext.name }}</a>
+                            <p class="author"><a href="#" class="author">{{ upnext.owner.nickname }}</a></p>
+                            <p class="views">{{ upnext.viewers }} views</p>
                         </div>
                         <div class="clearfix"> </div>
                     </div>
-                    <div class="single-right-grids">
+                    {% endfor %}
+                    <!-- <div class="single-right-grids">
                         <div class="col-md-4 single-right-grid-left">
                             <a href="single.html"><img src="images/r2.jpg" alt="" /></a>
                         </div>
@@ -486,7 +497,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             <p class="views">2,114,200 views</p>
                         </div>
                         <div class="clearfix"> </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="clearfix"> </div>
@@ -524,7 +535,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                                 <option>Chinese</option>
                             </select>
                         </li>
-                        <li><a href="history.html" class="f-history">History</a></li>
                         <li><a href="#small-dialog5" class="play-icon popup-with-zoom-anim f-history f-help">Help</a></li>
                 </div>
                 </ul>

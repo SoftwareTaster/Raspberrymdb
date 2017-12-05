@@ -3,6 +3,7 @@
 
 from hashlib import md5
 from app import db
+from sqlalchemy.ext.associationproxy import association_proxy
 
 inthe = db.Table('inthe',
     db.Column('group_id', db.Integer, db.ForeignKey('group.id')),
@@ -24,10 +25,22 @@ fav = db.Table('favorite',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('media_id', db.Integer, db.ForeignKey('media.id'))
 )
-buy = db.Table('purchase',
+ifav = db.Table('ifavorite',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('media_id', db.Integer, db.ForeignKey('media.id'))
+    db.Column('issue_id', db.Integer, db.ForeignKey('issue.id'))
 )
+
+class Association(db.Model):
+    __tablename__ = 'purchase'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key = True)
+    issue_id = db.Column(db.Integer, db.ForeignKey('issue.id'), primary_key = True)
+    extra_privilege = db.Column(db.Integer)
+    buy = db.relationship('Issue', back_populates='buyers')
+    buyer = db.relationship('User', back_populates='buys')
+# buy = db.Table('purchase',
+#     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+#     db.Column('media_id', db.Integer, db.ForeignKey('media.id'))
+# )
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True) # 用户号
@@ -40,7 +53,10 @@ class User(db.Model):
     medias = db.relationship('Media', backref='owner', lazy='dynamic') # Only 1 # 一对多
     issues = db.relationship('Issue', backref='owner', lazy='dynamic') # Only 2 # 一对多
     favs = db.relationship('Media', secondary=fav, backref='favors', lazy='dynamic') # Only 1 # 多对多
-    buys = db.relationship('Media', secondary=buy, backref='buyers', lazy='dynamic') # Only 1 # 多对多
+    ifavs = db.relationship('Issue', secondary=ifav, backref='ifavors', lazy='dynamic') # Only 1 # 多对多
+    # buys = db.relationship('Media', secondary=buy, backref='buyers', lazy='dynamic') # Only 1 # 多对多
+    buys = db.relationship('Association', back_populates='buyer')
+    buywhats = association_proxy('buys', 'buy')
     # backref 是一个在 Address 类上声明新属性的简单方法
     # lazy 决定了 SQLAlchemy 什么时候从数据库中加载数据
     def is_authenticated(self): # 方法应该只返回True，除非表示用户的对象因为某些原因不允许被认证
@@ -84,6 +100,7 @@ class Media(db.Model):
 class Issue(db.Model):
     id = db.Column(db.Integer, primary_key = True) # 发行号
     name = db.Column(db.String(100)) # 媒体名字
+    curl = db.Column(db.String(200)) # 封面
     wurl = db.Column(db.String(200)) # 加了水印的媒体链接
     furl = db.Column(db.String(200)) # 未加水印的媒体链接
     mtype = db.Column(db.String(40)) # 媒体类型
@@ -91,7 +108,13 @@ class Issue(db.Model):
     timestring = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     viewers = db.Column(db.Integer) # 浏览数量，仅在播放页面里计数
+    buyerno = db.Column(db.Integer) # 购买数量
     about = db.Column(db.String(200)) # about this media
+    flag = db.Column(db.Integer) # Mark this media is issue
+    price = db.Column(db.Float)
+
+    buyers = db.relationship('Association', back_populates='buy') # ('A', backref or back_populates = 'B') means if A wants me, it should call me 'B'
+    whosbuy = association_proxy('buyers', 'buyer')
 
     def __repr__(self): # 告诉Python如何打印这个类的对象
         return '<Issue %r>' % (self.name) # 改成一对多！实际拥有者只有一个，要他允许才能从媒体库中将其删除。

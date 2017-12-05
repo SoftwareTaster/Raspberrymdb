@@ -27,6 +27,11 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 </head>
 
 <body>
+    <script type="text/javascript">
+    function deleteme(url) {
+        window.location.href = url;
+    }
+    </script>
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -144,7 +149,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
         <div class="drop-navigation drop-navigation">
             <ul class="nav nav-sidebar">
                 <li><a href="{{ url_for('index') }}" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
-                <li><a href="publish.html" class="user-icon"><span class="glyphicon glyphicon-home glyphicon-blackboard" aria-hidden="true"></span>Publish</a></li>
+                <li><a href="{{ url_for('publish') }}" class="user-icon"><span class="glyphicon glyphicon-home glyphicon-blackboard" aria-hidden="true"></span>Publish</a></li>
                 <li><a href="#" class="menu1"><span class="glyphicon glyphicon-film" aria-hidden="true"></span>Groups<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
                 <ul class="cl-effect-2">
                     {% for group in groups %}
@@ -163,7 +168,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                 <ul class="cl-effect-1">
                     <li><a href="{{ url_for('private') }}">Upload</a></li>
                     <li><a href="{{ url_for('private_collect') }}">Collects</a></li>
-                    <li><a href="#">Buys</a></li>
+                    <li><a href="{{ url_for('private_buy') }}">Buys</a></li>
                     <li><a href="{{ url_for('private_download') }}">Download</a></li>
                 </ul>
                 <!-- script-for-menu -->
@@ -206,7 +211,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                     {% for mtype in medias1 %} {% for media in mtype %} {% if media.mtype == 'jpg' %}
                     <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
                         <div class="resent-grid-img recommended-grid-img">
-                            <a href="{{ url_for('single', mid=media.id, _external=True) }}"><img src="{{ media.curl }}" alt="" /></a>
+                            <a href="{% if media.flag == 1 %}{{ url_for('isingle', mid=media.id, model=2, _external=True) }}{% else %}{{ url_for('single', mid=media.id, model=2, _external=True) }}{% endif %}"><img src="{{ media.curl }}" alt="" /></a>
                             <div class="time small-time sports-tome">
                                 <p>{{ media.timestring }}</p>
                             </div>
@@ -215,8 +220,11 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 </div> -->
                         </div>
                         <div class="resent-grid-info recommended-grid-info">
-                            <h5><a href="{{ url_for('single', mid=media.id, _external=True) }}" class="title">{{ media.name }}</a></h5>
+                            <h5><a href="{% if media.flag == 1 %}{{ url_for('isingle', mid=media.id, model=2, _external=True) }}{% else %}{{ url_for('single', mid=media.id, model=2, _external=True) }}{% endif %}" class="title">{{ media.name }}</a></h5>
                             <p class="author"><a href="#" class="author">{{ user.nickname }}</a></p>
+                            <li class="right-list" style="float: right; list-style-type: none;"><img src="{{ url_for('static', filename='xvlvtao/images/t0.png') }}" alt="" onclick="javascript:deleteme('{{ url_for('deleteit', did=media.id, _external=True) }}')" />
+                                <a href="{{ url_for('deleteit', did=media.id, _external=True) }}"></a>
+                            </li>
                             <p class="views">{{ media.viewers }} views</p>
                         </div>
                     </div>
@@ -301,7 +309,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                     {% for mtype in medias1 %} {% for media in mtype %} {% if media.mtype == 'mp3' %}
                     <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
                         <div class="resent-grid-img recommended-grid-img">
-                            <a href="{{ url_for('single', mid=media.id, _external=True) }}"><img src="{{ media.curl }}" alt="" />
+                            <a href="{% if media.flag == 1 %}{{ url_for('isingle', mid=media.id, model=2, _external=True) }}{% else %}{{ url_for('single', mid=media.id, model=2, _external=True) }}{% endif %}"><img src="{{ media.curl }}" alt="" />
                             </a>
                             <div class="time small-time sports-tome">
                                 <p>{{ media.timestring }}</p>
@@ -311,8 +319,11 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 </div> -->
                         </div>
                         <div class="resent-grid-info recommended-grid-info">
-                            <h5><a href="{{ url_for('single', mid=media.id, _external=True) }}" class="title">{{ media.name }}</a></h5>
+                            <h5><a href="{% if media.flag == 1 %}{{ url_for('isingle', mid=media.id, model=2, _external=True) }}{% else %}{{ url_for('single', mid=media.id, model=2, _external=True) }}{% endif %}" class="title">{{ media.name }}</a></h5>
                             <p class="author"><a href="#" class="author">{{ user.nickname }}</a></p>
+                            <li class="right-list" style="float: right; list-style-type: none;"><img src="{{ url_for('static', filename='xvlvtao/images/t0.png') }}" alt="" onclick="javascript:deleteme('{{ url_for('deleteit', did=media.id, _external=True) }}')" />
+                                <a href="{{ url_for('deleteit', did=media.id, _external=True) }}"></a>
+                            </li>
                             <p class="views">{{ media.viewers }} views</p>
                         </div>
                     </div>
@@ -381,7 +392,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                     {% for mtype in medias1 %} {% for media in mtype %} {% if media.mtype == 'mp4' %}
                     <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
                         <div class="resent-grid-img recommended-grid-img">
-                            <a href="{{ url_for('single', mid=media.id, _external=True) }}">
+                            <a href="{% if media.flag == 1 %}{{ url_for('isingle', mid=media.id, model=2, _external=True) }}{% else %}{{ url_for('single', mid=media.id, model=2, _external=True) }}{% endif %}">
                                 <img src="{{ media.curl }}" alt="" />
                             </a>
                             <div class="time small-time sports-tome">
@@ -392,8 +403,11 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 </div> -->
                         </div>
                         <div class="resent-grid-info recommended-grid-info">
-                            <h5><a href="{{ url_for('single', mid=media.id, _external=True) }}" class="title">{{ media.name }}</a></h5>
+                            <h5><a href="{% if media.flag == 1 %}{{ url_for('isingle', mid=media.id, model=2, _external=True) }}{% else %}{{ url_for('single', mid=media.id, model=2, _external=True) }}{% endif %}" class="title">{{ media.name }}</a></h5>
                             <p class="author"><a href="#" class="author">{{ user.nickname }}</a></p>
+                            <li class="right-list" style="float: right; list-style-type: none;"><img src="{{ url_for('static', filename='xvlvtao/images/t0.png') }}" alt="" onclick="javascript:deleteme('{{ url_for('deleteit', did=media.id, _external=True) }}')" />
+                                <a href="{{ url_for('deleteit', did=media.id, _external=True) }}"></a>
+                            </li>
                             <p class="views">{{ media.viewers }} views</p>
                         </div>
                     </div>

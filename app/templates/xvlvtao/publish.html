@@ -1,0 +1,509 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="My Play Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template, 
+Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+    <script type="application/x-javascript">
+    addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+
+    function hideURLbar() { window.scrollTo(0, 1); }
+    </script>
+    <!-- bootstrap -->
+    <link href="{{ url_for('static', filename='xvlvtao/system/css/bootstrap.min.css') }}" rel='stylesheet' type='text/css' media="all" />
+    <!-- //bootstrap -->
+    <link href="{{ url_for('static', filename='xvlvtao/system/css/dashboard.css') }}" rel="stylesheet">
+    <!-- Custom Theme files -->
+    <link href="{{ url_for('static', filename='xvlvtao/system/css/style.css') }}" rel='stylesheet' type='text/css' media="all" />
+    <script src="{{ url_for('static', filename='xvlvtao/system/js/jquery-1.11.1.min.js') }}"></script>
+    <!--start-smoth-scrolling-->
+    <!-- fonts -->
+    <!-- <link href='http://fonts.useso.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+<link href='http://fonts.useso.com/css?family=Poiret+One' rel='stylesheet' type='text/css'> -->
+    <!-- //fonts -->
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ url_for('index') }}"><h1><img src="{{ url_for('static', filename='xvlvtao/system/images/logo.png') }}" alt="" /></h1></a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <div class="top-search">
+                    <form class="navbar-form navbar-right" method="post">
+                        {{ form.hidden_tag() }}
+                        <input id="search_str" name="search_str" type="text" class="form-control" placeholder="{{ placeholder }}">
+                        <input type="submit" value="">
+                    </form>
+                </div>
+                <div class="header-top-right">
+                    <div class="file">
+                        <a href="{{ url_for('upload_file') }}">Upload</a>
+                    </div>
+                    <div class="signin">
+                        <a href="#small-dialog2" class="play-icon popup-with-zoom-anim">Setting</a>
+                        <!-- pop-up-box -->
+                        <script type="text/javascript" src="{{ url_for('static', filename='xvlvtao/system/js/modernizr.custom.min.js') }}"></script>
+                        <link href="{{ url_for('static', filename='xvlvtao/system/css/popuo-box.css') }}" rel="stylesheet" type="text/css" media="all" />
+                        <script src="{{ url_for('static', filename='xvlvtao/system/js/jquery.magnific-popup.js') }}" type="text/javascript"></script>
+                        <!--//pop-up-box -->
+                        <div id="small-dialog2" class="mfp-hide">
+                            <h3>Personal Message</h3>
+                            <div class="social-sits" style="padding-top: 6.5em;">
+                                <script type="text/javascript">
+                                function BuildGroup() {
+                                    document.getElementById("BuildGroupForm").submit();
+                                }
+                                </script>
+                                <form id="BuildGroupForm" action="{{ url_for('build_group') }}">
+                                    <input type="text" class="email" name="groupname" placeholder="Group Name" pattern=".{3,}" title="Minimum 3 characters required" autocomplete="on" style="width: 90%; margin-bottom: 2em; padding: 10px; font-size: 14px; outline: none; color: #817F7F; border: solid 1px #817F7F;" />
+                                    <div class="facebook-button" style="text-align: center; margin-right: 3em; margin-bottom: 7em;">
+                                        <a href="#" style="font-size: 15px;" onclick="javascript:BuildGroup();">Build a Group</a>
+                                    </div>
+                                </form>
+                                <div class="chrome-button" style="text-align: center; margin-right: 3em;">
+                                    <a href="uploadcode">Join in a Group</a>
+                                </div>
+                                <div class="button-bottom" style="text-align: center; margin-right: 3em; margin-top: 3em;">
+                                    <p>Appreciate for filling out the blank!</p>
+                                </div>
+                            </div>
+                            <div class="signup">
+                                <script type="text/javascript">
+                                function SetPhone() {
+                                    document.getElementById("147258").submit();
+                                }
+                                </script>
+                                <form id="147258" action="{{ url_for('set_phone') }}">
+                                    <input type="text" class="email" name="nickname" placeholder="Nickname" value="{% if user.nickname %}{{ user.nickname }}{% endif %}" pattern=".{3,}" title="Minimum 3 characters required" autocomplete="on" />
+                                    <input type="text" class="email" placeholder="Email" value="{{ user.email }}" pattern="([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?" title="Enter a valid email" readonly="readonly" />
+                                    <input type="text" name="phonenumber" class="email" placeholder="Mobile Number" value="{% if user.phone %}{{ user.phone }}{% endif %}" minlength="11" maxlength="11" pattern="[1-9]{1}\d{9}" title="Enter a valid mobile number" />
+                                    <textarea name="about_me" class="email" placeholder="About Me" value="{{ user.about_me }}" maxlength="120" title="Enter something about me" style="width: 90%; height: 100px; margin: 10px 0; padding: 10px; font-size: 14px; outline: none; color: #817F7F; border: solid 1px #817F7F;">{{ user.about_me }}</textarea>
+                                    <div class="continue-button">
+                                        <a href="#small-dialog3" class="hvr-shutter-out-horizontal play-icon popup-with-zoom-anim" onclick="javascript:SetPhone();">COMPLETE</a>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="clearfix"> </div>
+                        </div>
+                        <div id="small-dialog3" class="mfp-hide">
+                            <h3>Thank You!</h3>
+                            <p> All Messages have been collected!</p>
+                            <div class="clearfix"> </div>
+                        </div>
+                        <div id="small-dialog7" class="mfp-hide">
+                            <h3>Thank You!</h3>
+                        </div>
+                        <script>
+                        $(document).ready(function() {
+                            $('.popup-with-zoom-anim').magnificPopup({
+                                type: 'inline',
+                                fixedContentPos: false,
+                                fixedBgPos: true,
+                                overflowY: 'auto',
+                                closeBtnInside: true,
+                                preloader: false,
+                                midClick: true,
+                                removalDelay: 300,
+                                mainClass: 'my-mfp-zoom-in'
+                            });
+
+                        });
+                        </script>
+                    </div>
+                    <div class="signin">
+                        <a href="#small-dialog" class="play-icon popup-with-zoom-anim">Log Out</a>
+                        <div id="small-dialog" class="mfp-hide">
+                            <h3>Log Out</h3>
+                            <a href="{{ url_for('logout') }}">OK</a>
+                        </div>
+                        <div class="clearfix"> </div>
+                    </div>
+                </div>
+                <div class="clearfix"> </div>
+            </div>
+    </nav>
+    <div class="col-sm-3 col-md-2 sidebar">
+        <div class="top-navigation">
+            <div class="t-menu">MENU</div>
+            <div class="t-img">
+                <img src="{{ url_for('static', filename='xvlvtao/system/images/lines.png') }}" alt="" />
+            </div>
+            <div class="clearfix"> </div>
+        </div>
+        <div class="drop-navigation drop-navigation">
+            <ul class="nav nav-sidebar">
+                <li><a href="{{ url_for('index') }}" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
+                <li class="active"><a href="{{ url_for('publish') }}" class="user-icon"><span class="glyphicon glyphicon-home glyphicon-blackboard" aria-hidden="true"></span>Publish</a></li>
+                <li><a href="#" class="menu1"><span class="glyphicon glyphicon-film" aria-hidden="true"></span>Groups<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
+                <ul class="cl-effect-2">
+                    {% for group in groups %}
+                    <li><a href="/group/{{ group.id }}">{{ group.nickname }}</a></li>
+                    {% endfor %}
+                </ul>
+                <!-- script-for-menu -->
+                <script>
+                $("li a.menu1").click(function() {
+                    $("ul.cl-effect-2").slideToggle(300, function() {
+                        // Animation complete.
+                    });
+                });
+                </script>
+                <li><a href="#" class="menu"><span class="glyphicon glyphicon-film glyphicon-king" aria-hidden="true"></span>Private<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
+                <ul class="cl-effect-1">
+                    <li><a href="{{ url_for('private') }}">Upload</a></li>
+                    <li><a href="{{ url_for('private_collect') }}">Collects</a></li>
+                    <li><a href="{{ url_for('private_buy') }}">Buys</a></li>
+                    <li><a href="{{ url_for('private_download') }}">Download</a></li>
+                </ul>
+                <!-- script-for-menu -->
+                <script>
+                $("li a.menu").click(function() {
+                    $("ul.cl-effect-1").slideToggle(300, function() {
+                        // Animation complete.
+                    });
+                });
+                </script>
+                <li><a href="tools.html" class="news-icon"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>Tools</a></li>
+            </ul>
+            <!-- script-for-menu -->
+            <script>
+            $(".top-navigation").click(function() {
+                $(".drop-navigation").slideToggle(300, function() {
+                    // Animation complete.
+                });
+            });
+            </script>
+            <div class="side-bottom">
+                <div class="copyright">
+                    <p>Copyright &copy; 2017.32-466 All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <div class="main-grids">
+            <div class="recommended">
+                <div class="recommended-grids english-grid">
+                    <div class="recommended-info">
+                        <div class="heading">
+                            <h3>Photos</h3>
+                        </div>
+                        <div class="heading-right">
+                        </div>
+                        <div class="clearfix"> </div>
+                    </div>
+                    {% for mtype in medias1 %} {% for media in mtype %} {% if media.mtype == 'jpg' %}
+                    <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid" style="padding-bottom: 3em;">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="{{ url_for('isingle', mid=media.id, model=0, _external=True) }}"><img src="{{ media.curl }}" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>{{ media.timestring }}</p>
+                            </div>
+                            <!--                             <div class="clck sports-clock">
+    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+</div> -->
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="{{ url_for('isingle', mid=media.id, model=0, _external=True) }}" class="title">{{ media.name }}</a></h5>
+                            <p class="author"><a href="#" class="author">{{ media.owner.nickname }}</a></p>
+                            <p class="views">{{ media.viewers }} views</p>
+                        </div>
+                    </div>
+                    {% endif %} {% endfor %} {% endfor %}
+                    <!-- <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="single.html"><img src="images/g1.jpg" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>9:34</p>
+                            </div>
+                            <div class="clck sports-clock">
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="single.html" class="title">Nullam interdum metus varius sit sed viverra</a></h5>
+                            <p class="author"><a href="#" class="author">John Maniya</a></p>
+                            <p class="views">2,114,200 views</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="single.html"><img src="images/g2.jpg" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>5:34</p>
+                            </div>
+                            <div class="clck sports-clock">
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="single.html" class="title">Nullam interdum metus varius sit sed viverra</a></h5>
+                            <p class="author"><a href="#" class="author">John Maniya</a></p>
+                            <p class="views">2,114,200 views</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="single.html"><img src="images/g3.jpg" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>6:55</p>
+                            </div>
+                            <div class="clck sports-clock">
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="single.html" class="title">Nullam interdum metus varius sit sed viverra</a></h5>
+                            <p class="author"><a href="#" class="author">John Maniya</a></p>
+                            <p class="views">2,114,200 views</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="single.html"><img src="images/g.jpg" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>8:04</p>
+                            </div>
+                            <div class="clck sports-clock">
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="single.html" class="title">Nullam interdum metus varius sit sed viverra</a></h5>
+                            <p class="author"><a href="#" class="author">John Maniya</a></p>
+                            <p class="views">2,114,200 views</p>
+                        </div>
+                    </div> -->
+                    <div class="clearfix"> </div>
+                </div>
+            </div>
+            <div class="recommended">
+                <div class="recommended-grids">
+                    <div class="recommended-info">
+                        <div class="heading">
+                            <h3>Musics</h3>
+                        </div>
+                        <div class="heading-right">
+                        </div>
+                        <div class="clearfix"> </div>
+                    </div>
+                    {% for mtype in medias1 %} {% for media in mtype %} {% if media.mtype == 'mp3' %}
+                    <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid" style="padding-bottom: 3em;">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="{{ url_for('isingle', mid=media.id, model=0, _external=True) }}"><img src="{{ media.curl }}" alt="" />
+                            </a>
+                            <div class="time small-time sports-tome">
+                                <p>{{ media.timestring }}</p>
+                            </div>
+                            <!--                             <div class="clck sports-clock">
+    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+</div> -->
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="{{ url_for('isingle', mid=media.id, model=0, _external=True) }}" class="title">{{ media.name }}</a></h5>
+                            <p class="author"><a href="#" class="author">{{ media.owner.nickname }}</a></p>
+                            <p class="views">{{ media.viewers }} views</p>
+                        </div>
+                    </div>
+                    {% endif %} {% endfor %} {% endfor %}
+                    <!-- <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="single.html"><img src="images/sp2.jpg" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>9:34</p>
+                            </div>
+                            <div class="clck sports-clock">
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="single.html" class="title">Nullam interdum metus varius sit sed viverra</a></h5>
+                            <p class="author"><a href="#" class="author">John Maniya</a></p>
+                            <p class="views">2,114,200 views</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="single.html"><img src="images/sp3.jpg" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>5:34</p>
+                            </div>
+                            <div class="clck sports-clock">
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="single.html" class="title">Nullam interdum metus varius sit sed viverra</a></h5>
+                            <p class="author"><a href="#" class="author">John Maniya</a></p>
+                            <p class="views">2,114,200 views</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="single.html"><img src="images/sp4.jpg" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>6:55</p>
+                            </div>
+                            <div class="clck sports-clock">
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="single.html" class="title">Nullam interdum metus varius sit sed viverra</a></h5>
+                            <p class="author"><a href="#" class="author">John Maniya</a></p>
+                            <p class="views">2,114,200 views</p>
+                        </div>
+                    </div> -->
+                    <div class="clearfix"> </div>
+                </div>
+            </div>
+            <div class="recommended">
+                <div class="recommended-grids">
+                    <div class="recommended-info">
+                        <div class="heading">
+                            <h3>Videos</h3>
+                        </div>
+                        <div class="heading-right">
+                        </div>
+                        <div class="clearfix"> </div>
+                    </div>
+                    {% for mtype in medias1 %} {% for media in mtype %} {% if media.mtype == 'mp4' %}
+                    <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid" style="padding-bottom: 3em;">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="{{ url_for('isingle', model=0, mid=media.id, _external=True) }}">
+                                <img src="{{ media.curl }}" alt="" />
+                            </a>
+                            <div class="time small-time sports-tome">
+                                <p>{{ media.timestring }}</p>
+                            </div>
+                            <!--                             <div class="clck sports-clock">
+    <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+</div> -->
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="{{ url_for('isingle', model=0, mid=media.id, _external=True) }}" class="title">{{ media.name }}</a></h5>
+                            <p class="author"><a href="#" class="author">{{ media.owner.nickname }}</a></p>
+                            <p class="views">{{ media.viewers }} views</p>
+                        </div>
+                    </div>
+                    {% endif %} {% endfor %} {% endfor %}
+                    <!-- <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="single.html"><img src="images/g2.jpg" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>9:34</p>
+                            </div>
+                            <div class="clck sports-clock">
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="single.html" class="title">Nullam interdum metus varius sit sed viverra</a></h5>
+                            <p class="author"><a href="#" class="author">John Maniya</a></p>
+                            <p class="views">2,114,200 views</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="single.html"><img src="images/sp1.jpg" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>5:34</p>
+                            </div>
+                            <div class="clck sports-clock">
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="single.html" class="title">Nullam interdum metus varius sit sed viverra</a></h5>
+                            <p class="author"><a href="#" class="author">John Maniya</a></p>
+                            <p class="views">2,114,200 views</p>
+                        </div>
+                    </div>
+                    <div class="col-md-2 resent-grid recommended-grid sports-recommended-grid">
+                        <div class="resent-grid-img recommended-grid-img">
+                            <a href="single.html"><img src="images/sp6.jpg" alt="" /></a>
+                            <div class="time small-time sports-tome">
+                                <p>6:55</p>
+                            </div>
+                            <div class="clck sports-clock">
+                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                            </div>
+                        </div>
+                        <div class="resent-grid-info recommended-grid-info">
+                            <h5><a href="single.html" class="title">Nullam interdum metus varius sit sed viverra</a></h5>
+                            <p class="author"><a href="#" class="author">John Maniya</a></p>
+                            <p class="views">2,114,200 views</p>
+                        </div>
+                    </div> -->
+                    <div class="clearfix"> </div>
+                </div>
+            </div>
+        </div>
+        <!-- footer -->
+        <div class="footer">
+            <div class="footer-grids">
+                <div class="footer-top">
+                    <div class="footer-top-nav">
+                        <ul>
+                            <li><a href="#">About</a></li>
+                            <li><a href="#">Press</a></li>
+                            <li><a href="#">Copyright</a></li>
+                            <li><a href="#">Creators</a></li>
+                            <li><a href="#">Advertise</a></li>
+                            <li><a href="#">Developers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-bottom-nav">
+                        <ul>
+                            <li><a href="#">Terms</a></li>
+                            <li><a href="#">Privacy</a></li>
+                            <li><a href="#small-dialog4" class="play-icon popup-with-zoom-anim">Send feedback</a></li>
+                            <li><a href="#">Policy & Safety </a></li>
+                            <li><a href="#">Try something new!</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <ul>
+                        <li class="languages">
+                            <select class="form-control bfh-countries" data-country="US">
+                                <option value="">Select Language</option>
+                                <option>English</option>
+                                <option>Chinese</option>
+                            </select>
+                        </li>
+                        <li><a href="#small-dialog5" class="play-icon popup-with-zoom-anim f-history f-help">Help</a></li>
+                </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- //footer -->
+    </div>
+    <div class="clearfix"> </div>
+    <div class="drop-menu">
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu4">
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Regular link</a></li>
+            <li role="presentation" class="disabled"><a role="menuitem" tabindex="-1" href="#">Disabled link</a></li>
+            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another link</a></li>
+        </ul>
+    </div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ url_for('static', filename='xvlvtao/system/js/bootstrap.min.js') }}"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+</body>
+
+</html>

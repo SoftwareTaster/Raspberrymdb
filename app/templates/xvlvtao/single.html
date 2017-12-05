@@ -50,7 +50,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         <a href="{{ url_for('upload_file') }}">Upload</a>
                     </div>
                     <div class="signin">
-                        <a href="#small-dialog2" class="play-icon popup-with-zoom-anim">Setting</a>
+                        <!-- <a href="#small-dialog2" class="play-icon popup-with-zoom-anim">Setting</a> -->
                         <!-- pop-up-box -->
                         <script type="text/javascript" src="{{ url_for('static', filename='xvlvtao/system/js/modernizr.custom.min.js') }}"></script>
                         <link href="{{ url_for('static', filename='xvlvtao/system/css/popuo-box.css') }}" rel="stylesheet" type="text/css" media="all" />
@@ -113,7 +113,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                         <a href="#small-dialog" class="play-icon popup-with-zoom-anim">Log Out</a>
                         <div id="small-dialog" class="mfp-hide">
                             <h3>Log Out</h3>
-                            <p>Log out successfully!</p>
                             <a href="{{ url_for('logout') }}">OK</a>
                         </div>
                         <div class="clearfix"> </div>
@@ -122,6 +121,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                 <div class="clearfix"> </div>
             </div>
     </nav>
+    {% if user.level == 1 %}
     <div class="col-sm-3 col-md-2 sidebar">
         <div class="top-navigation">
             <div class="t-menu">MENU</div>
@@ -133,7 +133,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
         <div class="drop-navigation drop-navigation">
             <ul class="nav nav-sidebar">
                 <li><a href="{{ url_for('index') }}" class="home-icon"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>Home</a></li>
-                <li><a href="publish.html" class="user-icon"><span class="glyphicon glyphicon-home glyphicon-blackboard" aria-hidden="true"></span>Publish</a></li>
+                <li><a href="{{ url_for('publish') }}" class="user-icon"><span class="glyphicon glyphicon-home glyphicon-blackboard" aria-hidden="true"></span>Publish</a></li>
                 <li><a href="#" class="menu1"><span class="glyphicon glyphicon-film" aria-hidden="true"></span>Groups<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
                 <ul class="cl-effect-2">
                     {% for group in groups %}
@@ -151,8 +151,8 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                 <li><a href="#" class="menu"><span class="glyphicon glyphicon-film glyphicon-king" aria-hidden="true"></span>Private<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></a></li>
                 <ul class="cl-effect-1">
                     <li><a href="{{ url_for('private') }}">Upload</a></li>
-                    <li><a href="#">Collects</a></li>
-                    <li><a href="#">Buys</a></li>
+                    <li><a href="{{ url_for('private_collect') }}">Collects</a></li>
+                    <li><a href="{{ url_for('private_buy') }}">Buys</a></li>
                     <li><a href="{{ url_for('private_download') }}">Download</a></li>
                 </ul>
                 <!-- script-for-menu -->
@@ -180,7 +180,12 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
             </div>
         </div>
     </div>
+    {% endif %}
+    {% if user.level == 2 %}
+    <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 main">
+    {% else %}
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    {% endif %}
         <div class="show-top-grids">
             <div class="col-sm-9 single-left">
                 <div class="song" style="width: 100%;">
@@ -189,15 +194,17 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                     </div>
                     <div class="video-grid">
                         {% if m.mtype == 'jpg' %}
-                        <iframe id="6666" src="{{ url_for('player', mid=mid, _external=True) }}" allowfullscreen style="height: 300px" onload="dothis()"></iframe>
+                        <iframe id="6666" src="{% if m.flag == 1 %}{{ url_for('iplayer', mid=mid, model=model, _external=True) }}{% else %}{{ url_for('player', mid=mid, model=model, _external=True) }}{% endif %}" allowfullscreen style="height: 300px" onload="dothis()"></iframe>
                         <script type="text/javascript">
                         function dothis() {
-                            document.getElementById("6666").style.height = document.getElementById("6666").contentDocument.getElementById("2333").height + 110 + "px";
+                            document.getElementById("6666").style.height = document.getElementById("6666").contentDocument.getElementById("2333").height + 220 + "px";
                             document.getElementById("removeme").parentNode.removeChild(document.getElementById("removeme"));
                         }
                         </script>
+                        {% elif m.mtype == 'mp3' %}
+                        <iframe src="{% if m.flag == 1 %}{{ url_for('iplayer', mid=mid, model=model, _external=True) }}{% else %}{{ url_for('player', mid=mid, model=model, _external=True) }}{% endif %}" style="height: 550px;" allowfullscreen></iframe>
                         {% else %}
-                        <iframe src="{{ url_for('player', mid=mid, _external=True) }}" style="height: 550px;" allowfullscreen></iframe>
+                        <iframe src="{% if m.flag == 1 %}{{ url_for('iplayer', mid=mid, model=model, _external=True) }}{% else %}{{ url_for('player', mid=mid, model=model, _external=True) }}{% endif %}" style="height: 750px;" allowfullscreen></iframe>
                         {% endif %}
                     </div>
                 </div>
@@ -214,7 +221,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
     </div>
 </div> -->
                 <div class="clearfix"> </div>
-                <div class="published">
+                <!-- <div class="published">
                     <script src="{{ url_for('static', filename='xvlvtao/system/jquery.min.js') }}"></script>
                     <script>
                     $(document).ready(function() {
@@ -252,7 +259,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                             </li>
                         </ul>
                     </div>
-                </div>
+                </div> -->
                 <!-- <div class="all-comments">
                     <div class="all-comments-info">
                         <a href="#">All Comments ()</a>
@@ -367,10 +374,18 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                     {% for upnext in UpNext %}
                     <div class="single-right-grids">
                         <div class="col-md-4 single-right-grid-left">
-                            <a href="{{ url_for('single', mid=upnext.id, _external=True) }}"><img src="{{ upnext.curl }}" alt="" /></a>
+                            {% if user.level == 1 %}
+                            <a href="{{ url_for('single', mid=upnext.id, model=model, _external=True) }}"><img src="{{ upnext.curl }}" alt="" /></a>
+                            {% else %}
+                            <a href="{{ url_for('isingle', mid=upnext.id, model=model, _external=True) }}"><img src="{{ upnext.curl }}" alt="" /></a>
+                            {% endif %}
                         </div>
                         <div class="col-md-8 single-right-grid-right">
-                            <a href="{{ url_for('single', mid=upnext.id, _external=True) }}" class="title">{{ upnext.name }}</a>
+                            {% if user.level == 1 %}
+                            <a href="{{ url_for('single', mid=upnext.id, model=model, _external=True) }}" class="title">{{ upnext.name }}</a>
+                            {% else %}
+                            <a href="{{ url_for('single', mid=upnext.id, model=model, _external=True) }}" class="title">{{ upnext.name }}</a>
+                            {% endif %}
                             <p class="author"><a href="#" class="author">{{ upnext.owner.nickname }}</a></p>
                             <p class="views">{{ upnext.viewers }} views</p>
                         </div>

@@ -31,7 +31,10 @@ def make_thumb(name, size, option):
         region = img
 
     # 缩放
-    thumb = region.resize((size, size), Image.ANTIALIAS)
+    if option == 0:
+        thumb = region.resize((size, size), Image.ANTIALIAS)
+    else:
+        thumb = img.resize(((width / height) * size, size), Image.ANTIALIAS)
 
     base, ext = os.path.splitext(os.path.basename(path))
     if option == 0:

@@ -15,19 +15,93 @@
         <div class="col s12 m6">
             <div class="card" style="width: 850px;">
                 <div class="card-image">
-                    <img id="2333" src="{{ m.furl }}">
-                    <span class="card-title">{{ m.name }}</span>
-                    <div class="fixed-action-btn horizontal halfway-fab" style="margin-bottom: 4em;">
+                    <img id="2333" src="{% if m.flag == 1 %}{{ m.wurl }}{% else %}{{ m.furl }}{% endif %}">
+                    <span class="card-title">{{ m.name }}</span> {% if m.flag == 1 and user.level == 2 %}
+                    <!-- 供应商 -->
+                    <div class="fixed-action-btn horizontal halfway-fab" style="bottom: 190px; right: 250px;">
                         <a class="btn-floating waves-effect waves-light red btn-large"><i class="material-icons">mode_edit</i></a>
                         <ul>
-                            <li><a class="btn-floating red" href="{{ url_for('likeit', mid=m.id, _external=True) }}"><i class="material-icons">star</i></a></li>
-                            <li><a class="btn-floating yellow darken-1"><i class="material-icons" href="{{ url_for('buyit', iid=m.id, _external=True) }}">shopping_cart</i></a></li>
                             <li><a class="modal-trigger btn-floating blue" href="#modal1"><i class="material-icons">settings</i></a></li>
                         </ul>
                     </div>
+                    {% elif m.flag == 1 and user.level == 1 and model == 0 %}
+                    <!-- 公开 -->
+                    <div class="fixed-action-btn horizontal halfway-fab" style="bottom: 190px; right: 80px;">
+                        <a class="btn-floating waves-effect waves-light red btn-large"><i class="material-icons">mode_edit</i></a>
+                        <ul>
+                            <li><a class="btn-floating yellow darken-1" href="{{ url_for('buyit', iid=m.id, _external=True) }}"><i class="material-icons"">shopping_cart</i></a></li>
+                        </ul>
+                    </div>
+                    {% else %} {% if model == 1 and m.flag == 1 %}
+                    <!-- 群组里的他人分享的购买物 -->
+                    <div class="fixed-action-btn horizontal halfway-fab" style="bottom: 190px; right: 80px;">
+                        <a class="btn-floating waves-effect waves-light red btn-large"><i class="material-icons">mode_edit</i></a>
+                        <ul>
+                            <li><a class="btn-floating red" href="{{ url_for('likeit', mid=m.id, which=2, _external=True) }}"><i class="material-icons">star</i></a></li>
+                            <li><a class="btn-floating yellow darken-1" href="{{ url_for('buyit', iid=m.id, _external=True) }}"><i class="material-icons">shopping_cart</i></a></li>
+                        </ul>
+                    </div>
+                    {% elif model == 1 %}
+                    <!-- 群组里的他人分享的私有物 -->
+                    <div class="fixed-action-btn horizontal halfway-fab" style="bottom: 190px; right: 80px;">
+                        <a class="btn-floating waves-effect waves-light red btn-large"><i class="material-icons">mode_edit</i></a>
+                        <ul>
+                            <li><a class="btn-floating red" href="{{ url_for('likeit', mid=m.id, which=2, _external=True) }}"><i class="material-icons">star</i></a></li>
+                        </ul>
+                    </div>
+                    {% elif model == 2 %}
+                    <!-- 私人上传物 -->
+                    <div class="fixed-action-btn horizontal halfway-fab" style="bottom: 190px; right: 80px;">
+                        <a class="btn-floating waves-effect waves-light red btn-large"><i class="material-icons">mode_edit</i></a>
+                        <ul>
+                            <li><a class="modal-trigger btn-floating blue" href="#modal1"><i class="material-icons">settings</i></a></li>
+                        </ul>
+                    </div>
+                    {% elif model == 3 and m.flag == 1 %}
+                    <!-- 收藏中的卖品 -->
+                    <div class="fixed-action-btn horizontal halfway-fab" style="bottom: 190px; right: 80px;">
+                        <a class="btn-floating waves-effect waves-light red btn-large"><i class="material-icons">mode_edit</i></a>
+                        <ul>
+                            <li><a class="btn-floating yellow darken-1" href="{{ url_for('buyit', iid=m.id, _external=True) }}"><i class="material-icons">shopping_cart</i></a></li>
+                        </ul>
+                    </div>
+                    {% elif model == 3 %}
+                    <!-- 收藏中的非卖品 -->
+                    <div class="fixed-action-btn horizontal halfway-fab" style="bottom: 190px; right: 80px;">
+                        <a class="btn-floating waves-effect waves-light red btn-large"><i class="material-icons">mode_edit</i></a>
+                        <ul>
+                        </ul>
+                    </div>
+                    {% elif model == 4 %}
+                    <!-- 购买物 -->
+                    <div class="fixed-action-btn horizontal halfway-fab" style="bottom: 190px; right: 80px;">
+                        <a class="btn-floating waves-effect waves-light red btn-large"><i class="material-icons">mode_edit</i></a>
+                        <ul>
+                            <li><a class="modal-trigger btn-floating blue" href="#modal1"><i class="material-icons">settings</i></a></li>
+                        </ul>
+                    </div>
+                    {% elif model == 5 and m.flag == 1 %}
+                    <!-- 可下载的卖品 -->
+                    <div class="fixed-action-btn horizontal halfway-fab" style="bottom: 190px; right: 80px;">
+                        <a class="btn-floating waves-effect waves-light red btn-large"><i class="material-icons">mode_edit</i></a>
+                        <ul>
+                            <li><a class="modal-trigger btn-floating blue" href="#modal1"><i class="material-icons">settings</i></a></li>
+                        </ul>
+                    </div>
+                    {% elif model == 5 %}
+                    <!-- 可下载的非卖品 -->
+                    <div class="fixed-action-btn horizontal halfway-fab" style="bottom: 190px; right: 80px;">
+                        <a class="btn-floating waves-effect waves-light red btn-large"><i class="material-icons">mode_edit</i></a>
+                        <ul>
+                            <li><a class="modal-trigger btn-floating blue" href="#modal1"><i class="material-icons">settings</i></a></li>
+                        </ul>
+                    </div>
+                    {% endif %} {% endif %}
                 </div>
                 <div class="card-content">
-                    <p>{{ m.owner.nickname }}</p>
+                    <p>Uploaded by {{ m.owner.nickname }} on {{ m.timestring }}</p>
+                    <p>Price: {{ m.price }}</p>
+                    <p>About: {{ m.about }}</p>
                 </div>
             </div>
         </div>
@@ -38,6 +112,45 @@
             document.getElementById("modelform").submit();
         }
         </script>
+        {% if m.flag == 1 and user.level == 2 %}
+        <!-- 商人的 -->
+        <form id="modelform" action="{{ url_for('editit', eid=m.id, _external=True) }}">
+            <div class="modal-content">
+                <div class="input-field col s6">
+                    <input name="newname" id="last_name" type="text" class="validate">
+                    <label for="last_name">new name</label>
+                </div>
+                <div class="input-field col s6 offset-s6">
+                    <input name="price" id="last_name" type="number" class="validate" min="0.0" max="100.0" step="0.1">
+                    <label for="last_name">new price</label>
+                </div>
+                <div class="input-field col s12">
+                    <textarea name="newintro" id="textarea1" class="materialize-textarea"></textarea>
+                    <label for="textarea1">new introduce</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat" onclick="javascript:commit_model();">OK</a>
+            </div>
+        </form>
+        {% endif %} {% if m.flag == 1 and user.level == 2 %} {% else %} {% if m.flag == 1 %}
+        <!-- 买的！ -->
+        <form id="modelform" action="{{ url_for('Editit', eid=m.id, _external=True) }}">
+            <div class="modal-content">
+                <div class="switch">
+                    <label>
+                        Only I can see
+                        <input name="privilege" type="checkbox" checked>
+                        <span class="lever"></span>Share in group
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat" onclick="javascript:commit_model();">OK</a>
+            </div>
+        </form>
+        {% else %}
+        <!-- 上传的 -->
         <form id="modelform" action="{{ url_for('editit', eid=m.id, _external=True) }}">
             <div class="modal-content">
                 <div class="input-field col s6">
@@ -51,7 +164,7 @@
                 <div class="switch">
                     <label>
                         Only I can see
-                        <input name="privilege" type="checkbox" {% if m.privilege==2 %}checked{% endif %}>
+                        <input name="privilege" type="checkbox" {% if m.buyers==2 %}checked{% endif %}>
                         <span class="lever"></span>Share in group
                     </label>
                 </div>
@@ -60,6 +173,7 @@
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat" onclick="javascript:commit_model();">OK</a>
             </div>
         </form>
+        {% endif %} {% endif %}
     </div>
     <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script type="text/javascript">
